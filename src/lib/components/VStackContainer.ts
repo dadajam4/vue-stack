@@ -1,16 +1,20 @@
 import { VNode, CreateElement } from 'vue';
-import { Vue, Component, Prop } from 'vue-property-decorator';
-import VStack from './VStack';
-import { error } from '../utils';
+import { Vue, Component } from 'vue-property-decorator';
+import { VStackContext, VStack } from './';
 
 @Component({
   name: 'v-stack-container',
+  inject: {
+    context: {
+      from: 'stackContext',
+    },
+  },
 })
 export default class VStackContainer extends Vue {
-  @Prop([String, Number]) zIndex?: string | number;
+  readonly context!: VStackContext;
 
   get computedZIndex(): number {
-    return this.$vstack.settings.zIndex;
+    return this.context.zIndex;
   }
 
   private genStackTransition(stack: VStack, h = this.$createElement) {
@@ -39,29 +43,9 @@ export default class VStackContainer extends Vue {
     );
   }
 
-  protected created() {
-    if (this.$vstack.container) {
-      throw error(
-        'VStackContainer must not be instantiated more than once in an application.',
-      );
-    }
-    this.$vstack.container = this;
-    let { zIndex } = this;
-    if (zIndex !== undefined) {
-      if (typeof zIndex === 'string') zIndex = parseInt(zIndex, 10);
-      this.$vstack.settings.zIndex = zIndex;
-    }
-  }
-
-  protected beforeDestroy() {
-    if (this.$vstack.container === this) {
-      this.$vstack.container = null;
-    }
-  }
-
   protected render(h: CreateElement): VNode {
     const children: VNode[] = [];
-    this.$vstack.stacks.forEach(stack => {
+    this.context.stacks.forEach(stack => {
       const { backdrop } = stack;
       if (backdrop) {
         const $backdrop = h('div', {
@@ -92,9 +76,7 @@ export default class VStackContainer extends Vue {
     return h(
       'div',
       {
-        attrs: {
-          'v-stack-container': '',
-        },
+        staticClass: 'vv-stack-container',
       },
       children,
     );

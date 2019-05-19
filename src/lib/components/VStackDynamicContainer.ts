@@ -1,7 +1,7 @@
 import { VNode, CreateElement, VNodeData, VNodeChildren } from 'vue';
 import { Vue, Component } from 'vue-property-decorator';
-import VStack from './VStack';
-import { error } from '../utils';
+import { VStackContext, VStack } from './';
+// import { error } from '../utils';
 
 export interface VStackDynamicSetting {
   Ctor: typeof VStack;
@@ -18,26 +18,25 @@ interface InternalSettings {
   reject: Function;
 }
 
-// interface Resolver<V = any> {
-//   id: number;
-//   resolve: (value?: V | PromiseLike<V> | undefined) => void;
-//   reject: () => void;
-// }
-
 @Component({
   name: 'v-stack-dynamic-container',
+  inject: {
+    context: {
+      from: 'stackContext',
+    },
+  },
 })
 export default class VStackDynamicContainer extends Vue {
+  readonly context!: VStackContext;
   $refs!: {
     stacks: VStack[];
   };
 
   private settings: InternalSettings[] = [];
-  // private resolvers: { [key: number]: Resolver } = {};
 
   public push<V = any>(setting: VStackDynamicSetting): Promise<V> {
     return new Promise<V>((resolve, reject) => {
-      const id = this.$vstack.createId();
+      const id = this.context.createId();
       this.settings.push({
         id,
         setting,
@@ -47,45 +46,25 @@ export default class VStackDynamicContainer extends Vue {
     });
   }
 
-  protected created() {
-    if (this.$vstack.dynamicContainer) {
-      throw error(
-        'VStackDynamicContainer must not be instantiated more than once in an application.',
-      );
-    }
-    this.$vstack.dynamicContainer = this;
-  }
+  // protected created() {
+  //   if (this.$vstack.dynamicContainer) {
+  //     throw error(
+  //       'VStackDynamicContainer must not be instantiated more than once in an application.',
+  //     );
+  //   }
+  //   this.$vstack.dynamicContainer = this;
+  // }
 
-  protected beforeDestroy() {
-    if (this.$vstack.dynamicContainer === this) {
-      this.$vstack.dynamicContainer = null;
-    }
-  }
-
-  // private getOrCreateResolver(id: number): Resolver {
-  //   let resolver = this.resolvers[id];
-  //   if (resolver) return resolver;
-
-  //   resolver = {
-  //     id,
-  //     resolve,
-  //     reject,
-  //   };
-  //   this.resolvers.push(resolver);
-
-  //   const { id }
-  //   if (this.reso)
+  // protected beforeDestroy() {
+  //   if (this.$vstack.dynamicContainer === this) {
+  //     this.$vstack.dynamicContainer = null;
+  //   }
   // }
 
   protected render(h: CreateElement): VNode {
     const children = this.settings.map(({ id, setting, resolve }) => {
       const { Ctor, data: _data = {} } = setting;
       let { children } = setting;
-      // const isString =
-
-      // if (typeof children === 'string') {
-
-      // }
 
       const data = {
         ..._data,
@@ -121,6 +100,7 @@ export default class VStackDynamicContainer extends Vue {
           ...data,
           ref: 'stacks',
           refInFor: true,
+          key: id,
         },
         children,
       );
@@ -129,9 +109,7 @@ export default class VStackDynamicContainer extends Vue {
     return h(
       'div',
       {
-        attrs: {
-          'v-stack-dynamic-container': '',
-        },
+        staticClass: 'vv-stack-dynamic-container',
       },
       children,
     );

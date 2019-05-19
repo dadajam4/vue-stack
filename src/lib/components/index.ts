@@ -1,3 +1,5 @@
+export { default as VStackContext } from './VStackContext';
+export * from './VStackContext';
 export { default as VStackContainer } from './VStackContainer';
 export * from './VStackContainer';
 export { default as VStack } from './VStack';

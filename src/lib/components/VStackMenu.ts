@@ -66,15 +66,11 @@ export default class VStackMenu extends Mixins<VStack>(VStack) {
   }
 
   get maxRight() {
-    return (
-      this.$vstack.containerWidth - this.computedEdgeMargin + this.pageXOffset
-    );
+    return this.$vstack.width - this.computedEdgeMargin + this.pageXOffset;
   }
 
   get maxBottom() {
-    return (
-      this.$vstack.containerHeight - this.computedEdgeMargin + this.pageYOffset
-    );
+    return this.$vstack.height - this.computedEdgeMargin + this.pageYOffset;
   }
 
   get computedWidth(): number | undefined {

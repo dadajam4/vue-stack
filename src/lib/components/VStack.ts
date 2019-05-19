@@ -8,6 +8,7 @@ import {
 } from 'vue';
 import { Vue, Model, Watch, Prop } from 'vue-property-decorator';
 import { Mixin } from 'vue-mixin-decorator';
+import { VStackContext } from './';
 import clickOutside from '../directives/click-outside';
 import { toNumber, pushVNodeEvent } from '../utils';
 import { NavigationGuard } from 'vue-router';
@@ -124,8 +125,7 @@ export default class VStack<V = any> extends Vue {
     const { zIndex } = this;
     if (typeof zIndex === 'string') return parseInt(zIndex, 10);
     if (typeof zIndex === 'number') return zIndex;
-    const { zIndex: baseZIndex } = this.$vstack.settings;
-    return baseZIndex + this.activateOrder;
+    return this.$vstack.zIndex + this.activateOrder;
   }
 
   get $activator() {
