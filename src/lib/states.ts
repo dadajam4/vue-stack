@@ -9,7 +9,7 @@ import {
 
 import { VStackDynamicDialogOptions } from './dialog-service';
 
-import { error } from '~/lib/utils';
+import { error } from './utils';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 

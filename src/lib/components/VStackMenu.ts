@@ -2,7 +2,7 @@ import { CreateElement } from 'vue';
 import { Prop } from 'vue-property-decorator';
 import { Mixin, Mixins } from 'vue-mixin-decorator';
 import VStack, { RenderContentResult } from './VStack';
-import { warn, toNumber } from '~/lib/utils';
+import { warn, toNumber } from '../utils';
 
 const DEFAULT_CONTAINER_MARGIN = 20;
 const DEFAULT_DISTANCE = 10;

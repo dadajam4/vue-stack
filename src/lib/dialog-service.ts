@@ -1,5 +1,5 @@
 import Vue, { VNodeChildren } from 'vue';
-import { VStackDialog, VStackDialogAction } from '~/lib/components';
+import { VStackDialog, VStackDialogAction } from './components';
 import { NavigationGuard } from 'vue-router';
 
 export interface VStackDynamicDialogOptions {

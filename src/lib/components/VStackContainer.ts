@@ -1,7 +1,7 @@
 import { VNode, CreateElement } from 'vue';
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import VStack from './VStack';
-import { error } from '~/lib/utils';
+import { error } from '../utils';
 
 @Component({
   name: 'v-stack-container',

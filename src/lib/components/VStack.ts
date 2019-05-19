@@ -8,7 +8,7 @@ import {
 } from 'vue';
 import { Vue, Model, Watch, Prop } from 'vue-property-decorator';
 import { Mixin } from 'vue-mixin-decorator';
-import clickOutside from '~/lib/directives/click-outside';
+import clickOutside from '../directives/click-outside';
 import { toNumber, pushVNodeEvent } from '../utils';
 import { NavigationGuard } from 'vue-router';
 
