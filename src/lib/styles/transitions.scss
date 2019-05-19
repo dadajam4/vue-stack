@@ -1,0 +1,84 @@
+//
+// Transitions
+//
+$duration-showup: 0.3s;
+$easing-swing: cubic-bezier(0.25, 0.8, 0.5, 1);
+$transition-primary: $duration-showup $easing-swing;
+
+.vv-stack-fade {
+  &-enter-active,
+  &-leave-active {
+    transition: opacity $transition-primary;
+  }
+
+  &-enter,
+  &-leave-to {
+    opacity: 0;
+  }
+}
+
+.vv-stack-scale {
+  &-enter-active,
+  &-leave-active {
+    transition: opacity $transition-primary, transform $transition-primary;
+  }
+
+  &-enter,
+  &-leave,
+  &-leave-to {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+
+.vv-stack-slide-y {
+  &-enter-active,
+  &-leave-active {
+    transition: opacity $transition-primary, transform $transition-primary;
+  }
+
+  &-enter,
+  &-leave-to {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+}
+
+.vv-stack-slide-y-reverse {
+  &-enter-active,
+  &-leave-active {
+    transition: opacity $transition-primary, transform $transition-primary;
+  }
+
+  &-enter,
+  &-leave-to {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+}
+
+.vv-stack-slide-x {
+  &-enter-active,
+  &-leave-active {
+    transition: opacity $transition-primary, transform $transition-primary;
+  }
+
+  &-enter,
+  &-leave-to {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+}
+
+.vv-stack-slide-x-reverse {
+  &-enter-active,
+  &-leave-active {
+    transition: opacity $transition-primary, transform $transition-primary;
+  }
+
+  &-enter,
+  &-leave-to {
+    opacity: 0;
+    transform: translateX(15px);
+  }
+}

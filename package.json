@@ -1,0 +1,61 @@
+{
+  "name": "@dadajam4/vue-stack",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/vue-stack.common.js",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "nuxt",
+    "docs": "nuxt generate",
+    "build": "npm run docs && plugboy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/dadajam4/vue-stack.git"
+  },
+  "keywords": [
+    "vue",
+    "stack",
+    "dialog",
+    "modal",
+    "typescript"
+  ],
+  "author": "dadajam4",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dadajam4/vue-stack/issues"
+  },
+  "homepage": "https://github.com/dadajam4/vue-stack#readme",
+  "devDependencies": {
+    "@dadajam4/plugboy": "^0.1.6",
+    "@nuxt/typescript": "^2.7.1",
+    "@vue/babel-preset-app": "^3.7.0",
+    "node-sass": "^4.12.0",
+    "nuxt": "^2.7.1",
+    "nuxt-property-decorator": "^2.1.3",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-css-only": "^1.0.0",
+    "rollup-plugin-sass": "^1.2.2",
+    "rollup-plugin-typescript2": "^0.21.0",
+    "rollup-plugin-vue": "^5.0.0",
+    "sass-loader": "^7.1.0",
+    "vue-mixin-decorator": "^1.1.1",
+    "vue-property-decorator": "^8.1.1"
+  },
+  "dependencies": {
+    "ts-node": "^8.1.0"
+  },
+  "files": [
+    "dist",
+    "types"
+  ],
+  "module": "dist/vue-stack.esm.js",
+  "jsdelivr": "dist/vue-stack.min.js",
+  "unpkg": "dist/vue-stack.min.js",
+  "types": "types/index.d.ts",
+  "sideeffects": false
+}
