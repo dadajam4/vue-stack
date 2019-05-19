@@ -21,7 +21,6 @@ npm-debug.log
 node_modules
 
 # environments
-package-lock.json
 .node-version
 
 #########################
