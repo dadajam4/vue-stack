@@ -1,10 +1,9 @@
 import { CreateElement } from 'vue';
-import { Mixin, Mixins } from 'vue-mixin-decorator';
-import { Prop } from 'vue-property-decorator';
+import { Component, Mixins, Prop } from 'vue-property-decorator';
 import { RenderContentResult } from './VStack';
 import VStackMenu from './VStackMenu';
 
-@Mixin({
+@Component({
   name: 'v-stack-tooltip',
 })
 export default class VStackTooltip extends Mixins<VStackMenu>(VStackMenu) {

@@ -1,7 +1,6 @@
 import { CreateElement, VNodeChildren, VNode } from 'vue';
 import { NormalizedScopedSlot } from 'vue/types/vnode';
-import { Mixin, Mixins } from 'vue-mixin-decorator';
-import { Prop } from 'vue-property-decorator';
+import { Component, Mixins, Prop } from 'vue-property-decorator';
 import VStack, { RenderContentResult } from './VStack';
 
 export interface VStackDialogAction {
@@ -22,7 +21,7 @@ const toStyleWidth = (width: number | string): string => {
   return isNaN(width as any) ? width : width + 'px';
 };
 
-@Mixin({
+@Component({
   name: 'v-stack-dialog',
 })
 export default class VStackDialog extends Mixins<VStack>(VStack) {

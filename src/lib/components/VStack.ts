@@ -6,9 +6,7 @@ import {
   VNodeChildren,
   VNodeData,
 } from 'vue';
-import { Vue, Model, Watch, Prop } from 'vue-property-decorator';
-import { Mixin } from 'vue-mixin-decorator';
-import { VStackContext } from './';
+import { Component, Vue, Model, Watch, Prop } from 'vue-property-decorator';
 import clickOutside from '../directives/click-outside';
 import { toNumber, pushVNodeEvent } from '../utils';
 import { NavigationGuard } from 'vue-router';
@@ -43,7 +41,7 @@ export interface VStackCloseOption {
 
 type DelayTimerProps = 'openDelay' | 'closeDelay';
 
-@Mixin({
+@Component({
   name: 'v-stack',
   inheritAttrs: false,
   directives: {

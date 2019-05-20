@@ -1,6 +1,5 @@
 import { CreateElement } from 'vue';
-import { Prop } from 'vue-property-decorator';
-import { Mixin, Mixins } from 'vue-mixin-decorator';
+import { Component, Mixins, Prop } from 'vue-property-decorator';
 import VStack, { RenderContentResult } from './VStack';
 import { warn, toNumber } from '../utils';
 
@@ -17,7 +16,7 @@ interface ComputedRect {
   height: number;
 }
 
-@Mixin({
+@Component({
   name: 'v-stack-menu',
 })
 export default class VStackMenu extends Mixins<VStack>(VStack) {

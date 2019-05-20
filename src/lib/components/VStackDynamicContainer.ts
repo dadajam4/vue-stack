@@ -1,7 +1,6 @@
 import { VNode, CreateElement, VNodeData, VNodeChildren } from 'vue';
 import { Vue, Component } from 'vue-property-decorator';
 import { VStackContext, VStack } from './';
-// import { error } from '../utils';
 
 export interface VStackDynamicSetting {
   Ctor: typeof VStack;
