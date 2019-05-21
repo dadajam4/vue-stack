@@ -379,6 +379,14 @@ export default class VStack<V = any> extends Vue {
     delete this._navigationGuardRemover;
   }
 
+  @Watch('alwaysRender', { immediate: true })
+  protected onChangeAlwaysRenderHandler(alwaysRender: boolean) {
+    if (alwaysRender) {
+      this.isBooted = true;
+      this.setNeedRender(true);
+    }
+  }
+
   @Watch('navigationGuard', { immediate: true })
   protected onChangeNavigationGuardHandler() {
     const { $router } = this;

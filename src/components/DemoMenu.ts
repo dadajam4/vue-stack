@@ -70,6 +70,7 @@ export default class DemoMenu extends Vue {
                   contentClass: 'demo-menu__menu',
                   distance: 0,
                   width: 'fit',
+                  alwaysRender: true,
                 },
                 ref: 'menu',
               },
