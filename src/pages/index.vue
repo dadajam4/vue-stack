@@ -32,6 +32,14 @@
     </VStackMenu>
 
     <div>
+      <DemoMenu>
+        <DemoMenuOption value="項目1">項目1</DemoMenuOption>
+        <DemoMenuOption value="項目2">項目2</DemoMenuOption>
+        <DemoMenuOption value="項目3">項目3です</DemoMenuOption>
+      </DemoMenu>
+    </div>
+
+    <div>
       テキストが入ります。
       <VStackTooltip>
         <template v-slot:activator="stack">
@@ -115,6 +123,7 @@
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator';
 import { VStackMenu, VStackTooltip, VStackDialog } from '~/lib';
+import { DemoMenu, DemoMenuOption } from '~/components';
 
 @Component({
   name: 'home-view',
@@ -122,6 +131,13 @@ import { VStackMenu, VStackTooltip, VStackDialog } from '~/lib';
     VStackMenu,
     VStackTooltip,
     VStackDialog,
+    DemoMenu,
+    DemoMenuOption,
+  },
+  provide() {
+    return {
+      test: this,
+    };
   },
 })
 export default class HomeView extends Vue {

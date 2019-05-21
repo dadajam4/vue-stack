@@ -1,0 +1,21 @@
+.demo-menu {
+  &__activator {
+    display: inline-block;
+    vertical-align: bottom;
+    border: solid 1px #000;
+    background: #fff;
+    padding: 10px;
+    cursor: pointer;
+  }
+
+  &__option {
+    background: #fff;
+    padding: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+
+    & + & {
+      border-top: solid 1px #ccc;
+    }
+  }
+}

@@ -72,22 +72,24 @@ export default class VStackMenu extends Mixins<VStack>(VStack) {
     return this.$vstack.height - this.computedEdgeMargin + this.pageYOffset;
   }
 
-  get computedWidth(): number | undefined {
+  get computedWidth(): number | 'fit' | undefined {
     const { width } = this;
+    if (width === 'fit') return width;
     if (width !== undefined) return toNumber(width);
   }
 
-  get computedHeight(): number | undefined {
+  get computedHeight(): number | 'fit' | undefined {
     const { height } = this;
+    if (height === 'fit') return height;
     if (height !== undefined) return toNumber(height);
   }
 
-  get computedMaxWidth(): number | undefined {
+  get computedMaxWidth(): number | 'fit' | undefined {
     const { maxWidth } = this;
     if (maxWidth !== undefined) return toNumber(maxWidth);
   }
 
-  get computedMaxHeight(): number | undefined {
+  get computedMaxHeight(): number | 'fit' | undefined {
     const { maxHeight } = this;
     if (maxHeight !== undefined) return toNumber(maxHeight);
   }
@@ -130,11 +132,14 @@ export default class VStackMenu extends Mixins<VStack>(VStack) {
       minTop,
       maxRight,
       maxBottom,
+      computedDistance,
+    } = this;
+
+    let {
       computedWidth,
       computedHeight,
       computedMaxWidth,
       computedMaxHeight,
-      computedDistance,
     } = this;
 
     let left: number, top: number, width: number, height: number;
@@ -149,6 +154,13 @@ export default class VStackMenu extends Mixins<VStack>(VStack) {
       width: activatorWidth,
       height: activatorHeight,
     } = activatorRect;
+
+    if (computedWidth === 'fit')
+      computedWidth = Math.max(activatorWidth, myWidth);
+    if (computedHeight === 'fit')
+      computedHeight = Math.max(activatorHeight, myHeight);
+    if (computedMaxWidth === 'fit') computedMaxWidth = activatorWidth;
+    if (computedMaxHeight === 'fit') computedMaxHeight = activatorHeight;
 
     const {
       top: isTop,
