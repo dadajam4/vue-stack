@@ -551,7 +551,7 @@ export default class VStack<V = any> extends Vue {
       data.directives.push({
         name: 'click-outside',
         value: () => {
-          if (!this.isFrontStack()) return;
+          if (this.nowShowing || !this.isFrontStack()) return;
           this.close();
         },
         args: {

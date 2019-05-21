@@ -26,7 +26,11 @@ export default class DemoMenu extends Vue {
 
   value: string = '';
 
-  toggle(e: MouseEvent) {
+  show(e: Event) {
+    return this.$refs.menu.show(e);
+  }
+
+  toggle(e: Event) {
     return this.$refs.menu.toggle(e);
   }
 
