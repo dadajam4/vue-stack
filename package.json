@@ -1,6 +1,6 @@
 {
   "name": "@dadajam4/vue-stack",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "",
   "main": "dist/vue-stack.common.js",
   "scripts": {

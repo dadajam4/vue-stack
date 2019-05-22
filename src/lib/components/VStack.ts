@@ -442,7 +442,6 @@ export default class VStack<V = any> extends Vue {
     if (this.isActive) {
       this.setToFront();
       this.triggerContentReadyTick();
-      console.warn('???', this);
     }
   }
 
