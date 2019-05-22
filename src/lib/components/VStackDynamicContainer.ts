@@ -73,6 +73,7 @@ export default class VStackDynamicContainer extends Vue {
         closeOnEsc: true,
         ...data.props,
         active: true,
+        alwaysRender: true,
       };
 
       data.on = data.on || {};

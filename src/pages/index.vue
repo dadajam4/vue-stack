@@ -1,6 +1,9 @@
 <template>
   <div class="test-page-1">
     <h1>Home</h1>
+    <div>
+      <nuxt-link to="/page2">page2</nuxt-link>
+    </div>
     <VStackMenu content-class="my-menu">
       <template v-slot:activator="stack">
         <a href="javascript:void(0);">Stack1 Activator {{ stack.isActive }}</a>
@@ -147,22 +150,9 @@ export default class HomeView extends Vue {
 </script>
 
 <style lang="scss">
-body {
-  margin: 0;
-  min-width: 1000px;
-  background: #ccc;
-}
-
 .test-page-1 {
   width: 800px;
   background: #fcc;
   margin: 0 auto;
-}
-
-.my-menu {
-  div {
-    padding: 20px;
-    border-radius: inherit;
-  }
 }
 </style>
