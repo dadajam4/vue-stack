@@ -1,7 +1,18 @@
 import { CreateElement, VNodeChildren, VNode } from 'vue';
-import { NormalizedScopedSlot } from 'vue/types/vnode';
+import { NormalizedScopedSlot, ScopedSlotChildren } from 'vue/types/vnode';
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 import VStack, { RenderContentResult } from './VStack';
+
+export type VStackDialogActionSlot = (
+  payload: VStackDialogActionSlotPayload,
+) => ScopedSlotChildren;
+
+export interface VStackDialogActionSlotPayload extends VStackDialogAction {
+  dialog: VStackDialog;
+  on: {
+    click: (e: MouseEvent) => void;
+  };
+}
 
 export interface VStackDialogAction {
   type: string;
@@ -9,6 +20,7 @@ export interface VStackDialogAction {
   autofocus?: boolean;
   color?: string;
   text?: VNodeChildren;
+  slot?: VStackDialogActionSlot;
   click?: (
     dialog: VStackDialog,
     action: VStackDialogAction,
@@ -80,10 +92,12 @@ export default class VStackDialog extends Mixins<VStack>(VStack) {
     const { actions, $createElement: h, $scopedSlots, baseClassName } = this;
     if (!actions || actions.length === 0) return;
 
-    const actionSlot = $scopedSlots.action;
+    const defaultActionSlot = $scopedSlots.action;
     const children: VNode[] = [];
 
     actions.forEach(action => {
+      const actionSlot = action.slot || defaultActionSlot;
+
       const on = {
         click: (e: MouseEvent) => {
           if (!e.defaultPrevented && action.click)

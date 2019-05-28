@@ -5,6 +5,7 @@ import {
   AsyncComponent,
   VNodeChildren,
   VNodeData,
+  FunctionalComponentOptions,
 } from 'vue';
 import { Component, Vue, Model, Watch, Prop } from 'vue-property-decorator';
 import clickOutside from '../directives/click-outside';
@@ -55,7 +56,9 @@ export default class VStack<V = any> extends Vue {
   };
 
   @Model('change', { type: Boolean, default: false }) active!: boolean;
-  @Prop({ type: String, default: 'vv-stack-fade' }) transition!: string;
+  @Prop({ type: [String, Object], default: 'vv-stack-fade' }) transition!:
+    | string
+    | FunctionalComponentOptions;
   @Prop({ type: Boolean, default: false }) alwaysRender!: boolean;
   @Prop({ type: [Boolean, String] }) backdrop?: boolean | string;
   @Prop({ type: Boolean }) openOnHover!: boolean;
@@ -66,6 +69,8 @@ export default class VStack<V = any> extends Vue {
   @Prop({ type: Boolean, default: true }) closeOnEsc!: boolean;
   @Prop({ type: Boolean, default: true }) closeOnNavigation!: boolean;
   @Prop({ type: Boolean }) persistent!: boolean;
+  @Prop({ type: [String, Number] }) timeout?: string | number;
+  @Prop({ type: Boolean }) noClickAnimation!: boolean;
   @Prop({ type: [Boolean, Function] }) navigationGuard?:
     | boolean
     | NavigationGuard;
@@ -75,7 +80,6 @@ export default class VStack<V = any> extends Vue {
   @Prop() contentStyle?: string | object[] | object;
   @Prop() value!: V;
 
-  // public renderedContent: VNode | null = null;
   public needRender: boolean = false;
   private innerActive: boolean = this.active;
   public stackId: number = null as any;
@@ -87,11 +91,23 @@ export default class VStack<V = any> extends Vue {
   private internalValue: V = (this.value || null) as any;
   private activatorNode?: VNode;
   private hasDetached: boolean = false;
+  private stackIsDestroyed: boolean = false;
+  private stackTimeoutId: number | null = null;
 
   nowShowing: boolean = false;
   nowClosing: boolean = false;
   activateOrder: number = 0;
   isBooted: boolean = false;
+
+  get computedTimeout(): number | void {
+    const { timeout } = this;
+    if (!timeout) return;
+    return toNumber(timeout);
+  }
+
+  get transitionProps(): any {
+    return undefined;
+  }
 
   get isMounted() {
     return this.internalMounted;
@@ -158,6 +174,7 @@ export default class VStack<V = any> extends Vue {
   set isActive(active: boolean) {
     this.isBooted = true;
     if (this.innerActive !== active) {
+      this.clearStackTimeoutId();
       if (active) this.triggerContentReadyTick();
       this.innerActive = active;
       this.$emit('change', active);
@@ -174,6 +191,13 @@ export default class VStack<V = any> extends Vue {
 
   onEsc(event: KeyboardEvent) {
     this.closeOnEsc && this.cancel(false);
+  }
+
+  private clearStackTimeoutId() {
+    if (this.stackTimeoutId !== null) {
+      clearTimeout(this.stackTimeoutId);
+      this.stackTimeoutId = null;
+    }
   }
 
   private clearDelay() {
@@ -305,10 +329,7 @@ export default class VStack<V = any> extends Vue {
 
   protected created() {
     this.$vstack.add(this);
-    // this.initDetach();
   }
-
-  private stackIsDestroyed: boolean = false;
 
   protected beforeDestroy() {
     try {
@@ -333,6 +354,7 @@ export default class VStack<V = any> extends Vue {
       }
     } catch (e) {}
 
+    this.clearStackTimeoutId();
     this.stackIsDestroyed = true;
     this.clearNavigationGuard();
     this.$vstack.remove(this);
@@ -503,6 +525,23 @@ export default class VStack<V = any> extends Vue {
     );
   }
 
+  private outsideClickAnimating: boolean = false;
+  private outsideClickAnimateTimerId: number | null = null;
+
+  protected animateByOutsideClick() {
+    this.outsideClickAnimating = false;
+    this.$nextTick(() => {
+      this.outsideClickAnimating = true;
+      if (this.outsideClickAnimateTimerId !== null) {
+        clearTimeout(this.outsideClickAnimateTimerId);
+      }
+      this.outsideClickAnimateTimerId = window.setTimeout(
+        () => (this.outsideClickAnimating = false),
+        150,
+      );
+    });
+  }
+
   private genContent(): VNode | undefined {
     const { needRender, $scopedSlots, hasContent, $createElement: h } = this;
     const defaultSlot = $scopedSlots.default;
@@ -520,6 +559,10 @@ export default class VStack<V = any> extends Vue {
       ...data.attrs,
     };
     data.attrs['v-stack'] = this.stackId;
+
+    if (this.outsideClickAnimating) {
+      data.attrs['v-stack--outside-click-animate'] = '';
+    }
 
     let { contentClass, contentStyle } = this;
 
@@ -551,11 +594,26 @@ export default class VStack<V = any> extends Vue {
       data.directives.push({
         name: 'click-outside',
         value: () => {
-          if (this.nowShowing || !this.isFrontStack()) return;
           this.close();
         },
         args: {
           closeConditional: (e: MouseEvent) => {
+            if (
+              this.nowShowing ||
+              !this.isFrontStack() ||
+              this.$vstack.hasAnyTransitioningStack
+            ) {
+              return false;
+            }
+
+            if (this.persistent) {
+              if (!this.noClickAnimation && e.target === this.$refs.backdrop) {
+                this.animateByOutsideClick();
+              }
+
+              return false;
+            }
+
             return this.isActive;
           },
         },
@@ -566,6 +624,13 @@ export default class VStack<V = any> extends Vue {
       pushVNodeEvent(data, 'mouseenter', this.mouseEnterHandler);
       pushVNodeEvent(data, 'mouseleave', this.mouseLeaveHandler);
     }
+
+    data.on = data.on || {};
+    data.on.click = data.on.click || [];
+    if (!Array.isArray(data.on.click)) data.on.click = [data.on.click];
+    data.on.click.push((e: MouseEvent) => {
+      e.stopPropagation();
+    });
 
     data.ref = 'content';
 
@@ -587,28 +652,70 @@ export default class VStack<V = any> extends Vue {
 
     if (backdrop) children.push(backdrop);
 
-    const transition = h(
-      'transition',
-      {
-        props: {
-          name: this.computedTransition,
-        },
-        on: {
-          afterEnter: (el: HTMLElement) => {
-            this.nowShowing = false;
-            this.nowClosing = false;
-            this.$emit('afterEnter', el);
-          },
-          afterLeave: (el: HTMLElement) => {
-            this.nowShowing = false;
-            this.nowClosing = false;
-            this.setNeedRender(false);
-            this.$emit('afterLeave', el);
-          },
-        },
+    const { computedTransition } = this;
+    const transitionChildren = content ? [content] : undefined;
+    const transitionListeners = {
+      beforeEnter: (el: HTMLElement) => {
+        this.$vstack.addTransitioningStack(this);
+        this.$emit('beforeEnter', this, el);
       },
-      content ? [content] : undefined,
-    );
+      afterEnter: (el: HTMLElement) => {
+        this.nowShowing = false;
+        this.nowClosing = false;
+        this.$vstack.removeTransitioningStack(this);
+        this.clearStackTimeoutId();
+        if (this.computedTimeout) {
+          this.stackTimeoutId = window.setTimeout(() => {
+            this.clearStackTimeoutId();
+            this.close({ force: true });
+          }, this.computedTimeout);
+        }
+        this.$emit('afterEnter', this, el);
+      },
+      enterCancelled: (el: HTMLElement) => {
+        this.nowShowing = false;
+        this.nowClosing = false;
+        this.$vstack.removeTransitioningStack(this);
+      },
+      beforeLeave: (el: HTMLElement) => {
+        this.$vstack.addTransitioningStack(this);
+        this.$emit('beforeLeave', this, el);
+      },
+      afterLeave: (el: HTMLElement) => {
+        this.nowShowing = false;
+        this.nowClosing = false;
+        this.setNeedRender(false);
+        this.$vstack.removeTransitioningStack(this);
+        this.$emit('afterLeave', this, el);
+      },
+      leaveCancelled: (el: HTMLElement) => {
+        this.nowShowing = false;
+        this.nowClosing = false;
+        this.$vstack.removeTransitioningStack(this);
+      },
+    };
+
+    const transition =
+      typeof computedTransition === 'string'
+        ? h(
+            'transition',
+            {
+              props: {
+                name: computedTransition,
+              },
+              on: transitionListeners,
+            },
+            transitionChildren,
+          )
+        : h(
+            computedTransition,
+            {
+              props: this.transitionProps,
+              on: transitionListeners,
+            },
+            transitionChildren,
+          );
+
     children.push(transition);
 
     return h(

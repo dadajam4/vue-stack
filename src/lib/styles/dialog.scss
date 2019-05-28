@@ -129,4 +129,24 @@
       margin-left: auto;
     }
   }
+
+  &[v-stack--outside-click-animate] {
+    animation-duration: 0.15s;
+    animation-name: vv-stack-dialog-outside-click;
+    animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+}
+
+@keyframes vv-stack-dialog-outside-click {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.03);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }

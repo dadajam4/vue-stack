@@ -12,3 +12,5 @@ export { default as VStackDialog } from './VStackDialog';
 export * from './VStackDialog';
 export { default as VStackTooltip } from './VStackTooltip';
 export * from './VStackTooltip';
+export { default as VStackSnackbar } from './VStackSnackbar';
+export * from './VStackSnackbar';

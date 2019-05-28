@@ -45,23 +45,9 @@ export default class VStackDynamicContainer extends Vue {
     });
   }
 
-  // protected created() {
-  //   if (this.$vstack.dynamicContainer) {
-  //     throw error(
-  //       'VStackDynamicContainer must not be instantiated more than once in an application.',
-  //     );
-  //   }
-  //   this.$vstack.dynamicContainer = this;
-  // }
-
-  // protected beforeDestroy() {
-  //   if (this.$vstack.dynamicContainer === this) {
-  //     this.$vstack.dynamicContainer = null;
-  //   }
-  // }
-
   protected render(h: CreateElement): VNode {
-    const children = this.settings.map(({ id, setting, resolve }) => {
+    const children = this.settings.map(_s => {
+      const { id, setting, resolve } = _s;
       const { Ctor, data: _data = {} } = setting;
       let { children } = setting;
 
@@ -80,8 +66,18 @@ export default class VStackDynamicContainer extends Vue {
       data.on.close = data.on.close || [];
       if (!Array.isArray(data.on.close)) data.on.close = [data.on.close];
 
-      (data.on.close as Function[]).push((stack: VStack) => {
+      data.on.close.push((stack: VStack) => {
         resolve(stack.payload);
+      });
+
+      data.on.afterLeave = data.on.afterLeave || [];
+      if (!Array.isArray(data.on.afterLeave))
+        data.on.afterLeave = [data.on.afterLeave];
+      data.on.afterLeave.push((stack: VStack) => {
+        const index = this.settings.indexOf(_s);
+        if (index !== -1) {
+          this.settings.splice(index, 1);
+        }
       });
 
       if (typeof children === 'string' && children.indexOf('\n') !== -1) {

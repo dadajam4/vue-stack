@@ -8,7 +8,9 @@ import {
   VStackDynamicSetting,
   VStackDialog,
   VStackDialogAction,
+  VStackSnackbar,
 } from './';
+import { error } from '../utils';
 
 export interface VStackDynamicDialogOptions {
   Ctor?: typeof VStackDialog;
@@ -30,12 +32,23 @@ export type VStackDialogBaseSetting = Omit<
   'header' | 'actions' | 'content'
 >;
 
+export interface VStackSnackbarDynamicSettings {
+  top?: boolean;
+  bottom?: boolean;
+  left?: boolean;
+  right?: boolean;
+  closeBtn?: boolean | string;
+  timeout?: number;
+  content: VNodeChildren;
+}
+
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 // import { error } from '../utils';
 declare module 'vue/types/vue' {
   interface Vue {
     $vstack: VStackContext;
+    $snackbar: VStackContext['snackbar'];
     $dialog: VStackContext['dialog'];
     $alert: VStackContext['alert'];
     $confirm: VStackContext['confirm'];
@@ -64,6 +77,7 @@ export default class VStackContext extends Vue {
   stacks: VStack[] = [];
   width: number = 0;
   height: number = 0;
+  private transitioningStackIds: number[] = [];
 
   get container() {
     return this.$refs.container;
@@ -120,6 +134,25 @@ export default class VStackContext extends Vue {
     return !!frontStack && frontStack.stackIs(stack);
   }
 
+  addTransitioningStack(stackOrId: VStack | number) {
+    const id = typeof stackOrId === 'number' ? stackOrId : stackOrId.stackId;
+    if (!this.transitioningStackIds.includes(id)) {
+      this.transitioningStackIds.push(id);
+    }
+  }
+
+  removeTransitioningStack(stackOrId: VStack | number) {
+    const id = typeof stackOrId === 'number' ? stackOrId : stackOrId.stackId;
+    const index = this.transitioningStackIds.indexOf(id);
+    if (index !== -1) {
+      this.transitioningStackIds.splice(index, 1);
+    }
+  }
+
+  get hasAnyTransitioningStack(): boolean {
+    return this.transitioningStackIds.length > 0;
+  }
+
   updateContainerRect() {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
@@ -127,11 +160,36 @@ export default class VStackContext extends Vue {
 
   dynnamic<V = any>(setting: VStackDynamicSetting) {
     const { dynamicContainer } = this;
-    // if (!dynamicContainer) {
-    //   console.warn(setting);
-    //   throw error('You need an instance of VStackDynamicContainer.');
-    // }
+    if (!dynamicContainer) {
+      console.warn(setting);
+      throw error('You need an instance of VStackDynamicContainer.');
+    }
     return dynamicContainer.push<V>(setting);
+  }
+
+  snackbar(
+    contentOrSettings: string | VStackSnackbarDynamicSettings,
+  ): Promise<any> {
+    const settings: VStackSnackbarDynamicSettings =
+      typeof contentOrSettings === 'object'
+        ? contentOrSettings
+        : {
+            content: contentOrSettings,
+          };
+
+    const { content } = settings;
+    const props = {
+      ...settings,
+    };
+    delete props.content;
+
+    return this.dynnamic({
+      Ctor: VStackSnackbar,
+      data: {
+        props,
+      },
+      children: content,
+    });
   }
 
   dialog<V = any>(opts: VStackDynamicDialogOptions): Promise<V> {
@@ -260,6 +318,7 @@ export default class VStackContext extends Vue {
       },
     });
 
+    Vue.prototype.$snackbar = this.snackbar;
     Vue.prototype.$dialog = this.dialog;
     Vue.prototype.$alert = this.alert;
     Vue.prototype.$confirm = this.confirm;
