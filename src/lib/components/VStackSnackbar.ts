@@ -52,7 +52,7 @@ export default class VStackSnackbar extends Mixins<VStack>(VStack) {
   get computedCloseBtn(): string | false {
     const { closeBtn } = this;
     if (closeBtn === false) return false;
-    return 'CLOSE';
+    return !closeBtn || closeBtn === true ? 'CLOSE' : closeBtn;
   }
 
   get hasHorizontal() {

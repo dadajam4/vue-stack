@@ -84,6 +84,7 @@ export default class HomeView extends Vue {
       top: this.top,
       bottom: this.bottom,
       timeout: this.timeout,
+      closeBtn: 'クローづ',
     });
   }
 
