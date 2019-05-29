@@ -44,6 +44,10 @@
       <button type="button" @click="onClickDynamic1">dynamic1</button>
       <button type="button" @click="onClickDynamic2">dynamic2</button>
     </div>
+
+    <div>
+      <button type="button" @click="onSnackWithRouteChange">SnackWithRouteChange</button>
+    </div>
   </div>
 </template>
 
@@ -145,6 +149,11 @@ export default class HomeView extends Vue {
         },
       ],
     });
+  }
+
+  onSnackWithRouteChange() {
+    this.$snackbar('Snack!!!!!');
+    this.$router.push('/');
   }
 }
 </script>

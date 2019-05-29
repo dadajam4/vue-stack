@@ -1,4 +1,8 @@
 import Vue from 'vue';
-import lib from '~/lib';
+import VueStack, { VueStackOptions } from '~/lib';
 
-Vue.use(lib);
+Vue.use<VueStackOptions>(VueStack, {
+  snackbar: {
+    closeBtn: '閉じる',
+  },
+});

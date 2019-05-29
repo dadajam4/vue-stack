@@ -42,12 +42,17 @@ export interface VStackSnackbarDynamicSettings {
   content: VNodeChildren;
 }
 
+export interface VStackDefaults {
+  snackbar?: Omit<Partial<VStackSnackbarDynamicSettings>, 'content'>;
+}
+
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 // import { error } from '../utils';
 declare module 'vue/types/vue' {
   interface Vue {
     $vstack: VStackContext;
+    $vstackDefaults: VStackDefaults;
     $snackbar: VStackContext['snackbar'];
     $dialog: VStackContext['dialog'];
     $alert: VStackContext['alert'];
@@ -170,12 +175,17 @@ export default class VStackContext extends Vue {
   snackbar(
     contentOrSettings: string | VStackSnackbarDynamicSettings,
   ): Promise<any> {
-    const settings: VStackSnackbarDynamicSettings =
+    const _settings: VStackSnackbarDynamicSettings =
       typeof contentOrSettings === 'object'
         ? contentOrSettings
         : {
             content: contentOrSettings,
           };
+
+    const settings = {
+      ...this.$vstackDefaults.snackbar,
+      ..._settings,
+    };
 
     const { content } = settings;
     const props = {
