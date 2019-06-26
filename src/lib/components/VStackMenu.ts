@@ -1,6 +1,7 @@
 import { CreateElement } from 'vue';
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 import VStack, { RenderContentResult } from './VStack';
+import VStackTheme from './VStackTheme';
 import { warn, toNumber } from '../utils';
 
 const DEFAULT_CONTAINER_MARGIN = 20;
@@ -19,7 +20,10 @@ interface ComputedRect {
 @Component({
   name: 'v-stack-menu',
 })
-export default class VStackMenu extends Mixins<VStack>(VStack) {
+export default class VStackMenu extends Mixins<VStack, VStackTheme>(
+  VStack,
+  VStackTheme,
+) {
   @Prop({ type: String, default: 'auto' }) transition!: string;
   @Prop({ type: Boolean }) top!: boolean;
   @Prop({ type: Boolean }) bottom!: boolean;
@@ -113,10 +117,10 @@ export default class VStackMenu extends Mixins<VStack>(VStack) {
     const { transition } = this;
     if (transition !== 'auto') return transition;
     const { right, top, bottom } = this.positionFlags;
-    if (bottom) return 'vv-stack-slide-y';
-    if (top) return 'vv-stack-slide-y-reverse';
-    if (right) return 'vv-stack-slide-x';
-    return 'vv-stack-slide-x-reverse';
+    if (bottom) return 'v-stack-slide-y';
+    if (top) return 'v-stack-slide-y-reverse';
+    if (right) return 'v-stack-slide-x';
+    return 'v-stack-slide-x-reverse';
   }
 
   get computedRect(): ComputedRect | null {
@@ -387,8 +391,11 @@ export default class VStackMenu extends Mixins<VStack>(VStack) {
     return {
       tag: 'div',
       data: {
-        staticClass: 'vv-stack-menu',
-        style: this.menuStyles,
+        staticClass: 'v-stack-menu',
+        style: {
+          ...this.menuStyles,
+          ...this.themeStyles,
+        },
       },
       children: defaultSlot && defaultSlot(this),
     };

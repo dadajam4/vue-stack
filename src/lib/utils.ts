@@ -1,5 +1,19 @@
 import { VNodeData } from 'vue';
 
+// https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md#feature-detection
+let _supportsPassive = false;
+try {
+  const opts = Object.defineProperty({}, 'passive', {
+    get: function() {
+      _supportsPassive = true;
+    },
+  });
+  (window as any).addEventListener('test', null, opts);
+  (window as any).removeEventListener('test', null, opts);
+} catch (e) {}
+
+export const SUPPORTS_PASSIVE: boolean = _supportsPassive;
+
 export function isPromise<T = any>(obj: any): obj is Promise<T> {
   return (
     !!obj &&

@@ -48,14 +48,38 @@
     <div>
       <button type="button" @click="onSnackWithRouteChange">SnackWithRouteChange</button>
     </div>
+
+    <div
+      v-for="color in [
+        'primary',
+        'secondary',
+        'accent',
+        'error',
+        'info',
+        'success',
+        'warning',
+      ]"
+      :key="color"
+    >
+      <VStackBtn :color="color" @click="() => {}">button</VStackBtn>
+      <VStackBtn :color="color" disabled @click="() => {}">button</VStackBtn>
+      <VStackBtn :color="color" flat @click="() => {}">button</VStackBtn>
+      <VStackBtn :color="color" disabled flat @click="() => {}">button</VStackBtn>
+      <VStackBtn :color="color" outline @click="() => {}">button</VStackBtn>
+      <VStackBtn :color="color" disabled outline @click="() => {}">button</VStackBtn>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator';
+import VStackBtn from '~/lib/components/VStackBtn';
 
 @Component({
   name: 'page2-view',
+  components: {
+    VStackBtn,
+  },
 })
 export default class HomeView extends Vue {
   text: string = '';
@@ -123,11 +147,6 @@ export default class HomeView extends Vue {
           click: () => {
             this.$alert('ok');
           },
-          // click: async (dialog, action, ev) => {
-          //   ev.stopPropagation();
-          //   await this.$alert('ok');
-          //   // dialog.close();
-          // },
           slot: payload => {
             return [
               this.$createElement(

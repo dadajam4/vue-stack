@@ -1,14 +1,11 @@
 //
 // Transitions
 //
-$duration-showup: 0.3s;
-$easing-swing: cubic-bezier(0.25, 0.8, 0.5, 1);
-$transition-primary: $duration-showup $easing-swing;
 
-.vv-stack-fade {
+.v-stack-fade {
   &-enter-active,
   &-leave-active {
-    transition: opacity $transition-primary;
+    transition: opacity $v-stack-transition-primary;
   }
 
   &-enter,
@@ -17,10 +14,11 @@ $transition-primary: $duration-showup $easing-swing;
   }
 }
 
-.vv-stack-scale {
+.v-stack-scale {
   &-enter-active,
   &-leave-active {
-    transition: opacity $transition-primary, transform $transition-primary;
+    transition: opacity $v-stack-transition-primary,
+      transform $v-stack-transition-primary;
   }
 
   &-enter,
@@ -31,10 +29,11 @@ $transition-primary: $duration-showup $easing-swing;
   }
 }
 
-.vv-stack-slide-y {
+.v-stack-slide-y {
   &-enter-active,
   &-leave-active {
-    transition: opacity $transition-primary, transform $transition-primary;
+    transition: opacity $v-stack-transition-primary,
+      transform $v-stack-transition-primary;
   }
 
   &-enter,
@@ -44,10 +43,11 @@ $transition-primary: $duration-showup $easing-swing;
   }
 }
 
-.vv-stack-slide-y-reverse {
+.v-stack-slide-y-reverse {
   &-enter-active,
   &-leave-active {
-    transition: opacity $transition-primary, transform $transition-primary;
+    transition: opacity $v-stack-transition-primary,
+      transform $v-stack-transition-primary;
   }
 
   &-enter,
@@ -57,10 +57,11 @@ $transition-primary: $duration-showup $easing-swing;
   }
 }
 
-.vv-stack-slide-x {
+.v-stack-slide-x {
   &-enter-active,
   &-leave-active {
-    transition: opacity $transition-primary, transform $transition-primary;
+    transition: opacity $v-stack-transition-primary,
+      transform $v-stack-transition-primary;
   }
 
   &-enter,
@@ -70,10 +71,11 @@ $transition-primary: $duration-showup $easing-swing;
   }
 }
 
-.vv-stack-slide-x-reverse {
+.v-stack-slide-x-reverse {
   &-enter-active,
   &-leave-active {
-    transition: opacity $transition-primary, transform $transition-primary;
+    transition: opacity $v-stack-transition-primary,
+      transform $v-stack-transition-primary;
   }
 
   &-enter,

@@ -18,9 +18,9 @@ export default class DemoMenuActivator extends Vue {
           tabindex: '0',
         },
         on: {
-          focus: (e: FocusEvent) => {
-            this.menu.show(e);
-          },
+          // focus: (e: FocusEvent) => {
+          //   this.menu.show(e);
+          // },
           click: (e: MouseEvent) => {
             this.menu.toggle(e);
           },

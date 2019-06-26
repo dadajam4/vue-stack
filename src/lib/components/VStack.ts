@@ -56,7 +56,7 @@ export default class VStack<V = any> extends Vue {
   };
 
   @Model('change', { type: Boolean, default: false }) active!: boolean;
-  @Prop({ type: [String, Object], default: 'vv-stack-fade' }) transition!:
+  @Prop({ type: [String, Object], default: 'v-stack-fade' }) transition!:
     | string
     | FunctionalComponentOptions;
   @Prop({ type: Boolean, default: false }) alwaysRender!: boolean;
@@ -78,6 +78,7 @@ export default class VStack<V = any> extends Vue {
   @Prop([String, Number]) zIndex?: string | number;
   @Prop() contentClass?: any;
   @Prop() contentStyle?: string | object[] | object;
+  @Prop({ type: Boolean }) stopDocumentScroll!: boolean;
   @Prop() value!: V;
 
   public needRender: boolean = false;
@@ -179,10 +180,12 @@ export default class VStack<V = any> extends Vue {
       this.innerActive = active;
       this.$emit('change', active);
       if (active) {
+        this.$vstack.pushScrollStop(this);
         this.nowShowing = true;
         this.setToFront();
         this.$emit('show', this);
       } else {
+        this.$vstack.removeScrollStop(this);
         this.nowClosing = true;
         this.$emit('close', this);
       }
@@ -357,6 +360,7 @@ export default class VStack<V = any> extends Vue {
     this.clearStackTimeoutId();
     this.stackIsDestroyed = true;
     this.clearNavigationGuard();
+    this.$vstack.removeScrollStop(this);
     this.$vstack.remove(this);
   }
 
@@ -434,7 +438,7 @@ export default class VStack<V = any> extends Vue {
       if (this.stackIsDestroyed || this.hasDetached || !content) return;
 
       const target =
-        document.querySelector('[vv-stack-container]') || document.body;
+        document.querySelector('[v-stack-container]') || document.body;
 
       target.insertBefore(content, target.firstChild);
 
@@ -464,6 +468,7 @@ export default class VStack<V = any> extends Vue {
     if (this.isActive) {
       this.setToFront();
       this.triggerContentReadyTick();
+      this.$vstack.pushScrollStop(this);
     }
   }
 
@@ -506,9 +511,10 @@ export default class VStack<V = any> extends Vue {
     const { backdrop, $createElement: h } = this;
     if (!backdrop) return;
     const $backdrop = h('div', {
-      staticClass: 'vv-stack-backdrop',
+      staticClass: 'v-stack-backdrop',
       style: {
         zIndex: this.computedZIndex,
+        backgroundColor: this.$vstack.themeBackdropColor,
       },
       directives: [{ name: 'show', value: this.isActive }],
       ref: 'backdrop',
@@ -722,7 +728,7 @@ export default class VStack<V = any> extends Vue {
       'div',
       {
         attrs: {
-          'vv-stack-flagment': '',
+          'v-stack-flagment': '',
         },
         staticStyle: {
           display: 'none',

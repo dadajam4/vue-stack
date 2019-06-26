@@ -105,7 +105,7 @@ export default class VStackDynamicContainer extends Vue {
     return h(
       'div',
       {
-        staticClass: 'vv-stack-dynamic-container',
+        staticClass: 'v-stack-dynamic-container',
       },
       children,
     );

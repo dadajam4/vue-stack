@@ -2,6 +2,8 @@ import { CreateElement, VNodeChildren, VNode } from 'vue';
 import { NormalizedScopedSlot, ScopedSlotChildren } from 'vue/types/vnode';
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 import VStack, { RenderContentResult } from './VStack';
+import VStackBtn from './VStackBtn';
+import VStackTheme from './VStackTheme';
 
 export type VStackDialogActionSlot = (
   payload: VStackDialogActionSlotPayload,
@@ -19,7 +21,8 @@ export interface VStackDialogAction {
   spacer?: boolean;
   autofocus?: boolean;
   color?: string;
-  text?: VNodeChildren;
+  outline?: boolean;
+  text?: VNodeChildren | ((dialog: VStackDialog) => VNodeChildren);
   slot?: VStackDialogActionSlot;
   click?: (
     dialog: VStackDialog,
@@ -36,17 +39,23 @@ const toStyleWidth = (width: number | string): string => {
 @Component({
   name: 'v-stack-dialog',
 })
-export default class VStackDialog extends Mixins<VStack>(VStack) {
-  @Prop({ type: String, default: 'vv-stack-slide-y' }) transition!: string;
+export default class VStackDialog extends Mixins<VStack, VStackTheme>(
+  VStack,
+  VStackTheme,
+) {
+  @Prop({ type: String, default: 'v-stack-slide-y' }) transition!: string;
   @Prop() header?: VNodeChildren;
   @Prop({ type: Array }) actions?: VStackDialogAction[];
-  @Prop({ type: String, default: 'vv-stack-dialog' }) baseClassName!: string;
+  @Prop({ type: String, default: 'v-stack-dialog' }) baseClassName!: string;
   @Prop({ type: [Number, String] }) width?: number | string;
   @Prop({ type: [Number, String] }) minWidth?: number | string;
   @Prop({ type: [Number, String] }) maxWidth?: number | string;
+  @Prop({ type: Boolean, default: true }) stopDocumentScroll!: boolean;
 
   get contentStyles() {
-    const styles: { [key: string]: string } = {};
+    const styles: { [key: string]: string } = {
+      ...this.themeStyles,
+    };
     const { width, minWidth, maxWidth } = this;
     if (width !== undefined) styles.width = toStyleWidth(width);
     if (minWidth !== undefined) styles.minWidth = toStyleWidth(minWidth);
@@ -115,33 +124,26 @@ export default class VStackDialog extends Mixins<VStack>(VStack) {
       } else {
         children.push(
           h(
-            'button',
+            VStackBtn,
             {
+              props: {
+                type: 'button',
+                color: action.color,
+                outline: action.outline,
+              },
               staticClass: `${baseClassName}__action ${baseClassName}__action--${
                 action.type
               }`,
               class: {
                 [`${baseClassName}__action--spacer`]: action.spacer,
               },
-              style: {
-                color: action.color ? action.color : undefined,
-              },
               attrs: {
-                type: 'button',
-                autofocus: action.autofocus ? '' : undefined,
+                autofocus: action.autofocus,
               },
               on,
               key: action.type,
             },
-            [
-              h(
-                'span',
-                {
-                  staticClass: `${baseClassName}__action__content`,
-                },
-                action.text,
-              ),
-            ],
+            typeof action.text === 'function' ? action.text(this) : action.text,
           ),
         );
       }

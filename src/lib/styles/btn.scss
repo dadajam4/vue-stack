@@ -1,0 +1,95 @@
+//
+// Button
+//
+
+.v-stack-btn {
+  position: relative;
+  appearance: none;
+  display: inline-flex;
+  vertical-align: bottom;
+  border: solid 1px transparent;
+  font: inherit;
+  will-change: box-shadow;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0 16px;
+  height: 32px;
+  border-radius: 2px;
+  align-items: center;
+  flex: 0 0 auto;
+  font-size: 14px;
+  font-weight: 500;
+  justify-content: center;
+  margin: 6px 8px;
+  min-width: 64px;
+  outline: 0;
+  border: 0;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1), color 1ms;
+  position: relative;
+  vertical-align: middle;
+  user-select: none;
+  cursor: pointer;
+  background-color: transparent;
+
+  &::-moz-focus-inner {
+    border: 0;
+  }
+
+  &--outline {
+    border: solid 1px currentColor;
+  }
+
+  &:not(.v-stack-btn--disabled):not(.v-stack-btn--flat):not(.v-stack-btn--outline) {
+    box-shadow: $v-stack-btn-base-shadow;
+
+    &:active {
+      box-shadow: $v-stack-btn-active-shadow;
+    }
+  }
+
+  &:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    background: currentColor;
+    transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+  }
+
+  &:focus,
+  &:hover {
+    &:before {
+      opacity: 0.12;
+    }
+  }
+
+  &--noaction {
+    pointer-events: none !important;
+    cursor: default !important;
+  }
+
+  &--disabled {
+    pointer-events: none !important;
+    cursor: default !important;
+  }
+
+  &__content {
+    position: relative;
+    align-items: center;
+    border-radius: inherit;
+    color: inherit;
+    display: flex;
+    flex: 1 0 auto;
+    justify-content: center;
+    margin: 0 auto;
+    transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+    white-space: nowrap;
+    width: inherit;
+  }
+}

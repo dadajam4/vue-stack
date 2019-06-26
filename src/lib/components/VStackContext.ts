@@ -1,5 +1,5 @@
 import Vue, { CreateElement, VNode, VNodeChildren } from 'vue';
-import { Component, Prop } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import { NavigationGuard } from 'vue-router';
 import {
   VStack,
@@ -10,10 +10,15 @@ import {
   VStackDialogAction,
   VStackSnackbar,
 } from './';
-import { error } from '../utils';
+import {
+  VueStackSettings,
+  VueStackThemeName,
+  vueStackThemeNames,
+} from '../settings';
+import { enableScroll, disableScroll } from '../prevent-scroll';
+import { warn, error } from '../utils';
 
 export interface VStackDynamicDialogOptions {
-  Ctor?: typeof VStackDialog;
   transition?: string;
   backdrop?: boolean | string;
   closeOnEsc?: boolean;
@@ -25,6 +30,7 @@ export interface VStackDynamicDialogOptions {
   header?: VNodeChildren;
   actions?: VStackDialogAction[];
   content?: VNodeChildren;
+  theme?: VueStackThemeName;
 }
 
 export type VStackDialogBaseSetting = Omit<
@@ -39,20 +45,13 @@ export interface VStackSnackbarDynamicSettings {
   right?: boolean;
   closeBtn?: boolean | string;
   timeout?: number;
+  color?: string;
   content: VNodeChildren;
 }
 
-export interface VStackDefaults {
-  snackbar?: Omit<Partial<VStackSnackbarDynamicSettings>, 'content'>;
-}
-
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
-// import { error } from '../utils';
 declare module 'vue/types/vue' {
   interface Vue {
     $vstack: VStackContext;
-    $vstackDefaults: VStackDefaults;
     $snackbar: VStackContext['snackbar'];
     $dialog: VStackContext['dialog'];
     $alert: VStackContext['alert'];
@@ -74,15 +73,34 @@ export default class VStackContext extends Vue {
     dynamicContainer: VStackDynamicContainer;
   };
 
-  @Prop({ type: Number, default: 32767 }) zIndex!: number;
-  @Prop({ type: Object, default: (): VStackDialogBaseSetting => ({}) })
-  dialogSetting!: VStackDialogBaseSetting;
-
   private uid: number = 0;
+  private internalTheme: VueStackThemeName = this.$vstackSettings.defaultTheme;
   stacks: VStack[] = [];
   width: number = 0;
   height: number = 0;
   private transitioningStackIds: number[] = [];
+  private colorSchemeWatcherList: {
+    list: MediaQueryList;
+    handler: (ev: MediaQueryListEvent) => any;
+  }[] = [];
+
+  get theme() {
+    return this.internalTheme;
+  }
+
+  get computedTheme() {
+    return this.theme;
+  }
+
+  set theme(theme: VueStackThemeName) {
+    if (this.internalTheme !== theme) {
+      this.internalTheme = theme;
+    }
+  }
+
+  get zIndex() {
+    return this.$vstackSettings.zIndex;
+  }
 
   get container() {
     return this.$refs.container;
@@ -96,6 +114,40 @@ export default class VStackContext extends Vue {
     const id = this.uid + 1;
     this.uid = id;
     return id;
+  }
+
+  private scrollStoppers: number[] = [];
+
+  pushScrollStop(stack: VStack) {
+    if (stack.stopDocumentScroll) {
+      const { stackId } = stack;
+      if (!this.scrollStoppers.includes(stackId)) {
+        this.scrollStoppers.push(stackId);
+        this.scrollStopCheck();
+      }
+    }
+  }
+
+  removeScrollStop(stack: VStack) {
+    const index = this.scrollStoppers.indexOf(stack.stackId);
+    if (index !== -1) {
+      this.scrollStoppers.splice(index, 1);
+      this.scrollStopCheck();
+    }
+  }
+
+  private internalScrollStoped: boolean = false;
+
+  private scrollStopCheck() {
+    const before = this.internalScrollStoped;
+    const now = this.scrollStoppers.length > 0;
+    if (before === now) return;
+    this.internalScrollStoped = now;
+    if (now) {
+      disableScroll();
+    } else {
+      enableScroll();
+    }
   }
 
   add(stack: VStack): number {
@@ -158,6 +210,11 @@ export default class VStackContext extends Vue {
     return this.transitioningStackIds.length > 0;
   }
 
+  getString(key: keyof VueStackSettings['strings']): VNodeChildren {
+    const string = this.$vstackSettings.strings[key];
+    return typeof string === 'function' ? string(this) : string;
+  }
+
   updateContainerRect() {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
@@ -183,7 +240,7 @@ export default class VStackContext extends Vue {
           };
 
     const settings = {
-      ...this.$vstackDefaults.snackbar,
+      ...this.$vstackSettings.snackbar,
       ..._settings,
     };
 
@@ -204,20 +261,21 @@ export default class VStackContext extends Vue {
 
   dialog<V = any>(opts: VStackDynamicDialogOptions): Promise<V> {
     const {
-      transition = 'vv-stack-slide-y',
-      backdrop = true,
-      closeOnEsc = true,
-      persistent = false,
-      navigationGuard = true,
-      minWidth = 280,
-      maxWidth = 540,
+      transition,
+      backdrop,
+      closeOnEsc,
+      persistent,
+      navigationGuard,
+      minWidth,
+      maxWidth,
+      theme,
     } = {
-      ...this.dialogSetting,
+      ...this.$vstackSettings.dialog,
       ...opts,
     };
 
     return this.dynnamic({
-      Ctor: opts.Ctor || this.dialogSetting.Ctor || VStackDialog,
+      Ctor: VStackDialog,
       data: {
         props: {
           header: opts.header,
@@ -230,6 +288,7 @@ export default class VStackContext extends Vue {
           width: opts.width,
           minWidth,
           maxWidth,
+          theme,
         },
       },
       children: opts.content,
@@ -246,7 +305,7 @@ export default class VStackContext extends Vue {
     opts.actions = opts.actions || [
       {
         type: 'ok',
-        text: 'OK',
+        text: this.getString('ok'),
         autofocus: true,
         spacer: true,
         click: dialog => {
@@ -267,16 +326,17 @@ export default class VStackContext extends Vue {
     opts.actions = opts.actions || [
       {
         type: 'cancel',
-        text: 'キャンセル',
-        autofocus: true,
+        text: this.getString('cancel'),
         spacer: true,
+        outline: true,
         click: dialog => {
           dialog.resolve(false);
         },
       },
       {
         type: 'ok',
-        text: 'OK',
+        text: this.getString('ok'),
+        autofocus: true,
         click: dialog => {
           dialog.resolve(true);
         },
@@ -285,12 +345,53 @@ export default class VStackContext extends Vue {
     return this.dialog<boolean>(opts);
   }
 
+  get themeSettings() {
+    return this.$vstackSettings.themes[this.computedTheme];
+  }
+
+  get themeBackgroundColor() {
+    return this.themeSettings.background;
+  }
+
+  get themeTextColor() {
+    return this.themeSettings.text;
+  }
+
+  get themeStyles() {
+    return {
+      backgroundColor: this.themeBackgroundColor,
+      color: this.themeTextColor,
+    };
+  }
+
+  get themeCaptionColor() {
+    return this.themeSettings.text;
+  }
+
+  get themeBackdropColor() {
+    return this.themeSettings.backdrop;
+  }
+
+  getThemeContextColor(key: string, theme = this.theme) {
+    let colorMap = this.$vstackSettings.themes[theme].contexts[key];
+    if (!colorMap && this.computedTheme !== this.$vstackSettings.defaultTheme) {
+      colorMap = this.$vstackSettings.themes[this.$vstackSettings.defaultTheme]
+        .contexts[key];
+      if (!colorMap) {
+        warn(`missing context color at ${key}`);
+        colorMap = { base: '', text: '' };
+      }
+    }
+    return colorMap;
+  }
+
   protected render(h: CreateElement): VNode {
     const { stacks } = this;
     return h(
       'div',
       {
-        staticClass: 'vv-stack-context',
+        staticClass: 'v-stack-context',
+        style: this.themeStyles,
       },
       [
         h(VStackContainer, {
@@ -313,6 +414,31 @@ export default class VStackContext extends Vue {
       const frontStack = this.getFront();
       frontStack && frontStack.onEsc(e);
     }
+  }
+
+  private startWatchColorScheme() {
+    if (!this.$vstackSettings.usePrefersColorScheme) return;
+    this.stopWatchColorScheme();
+    vueStackThemeNames.forEach(name => {
+      const list = window.matchMedia(`(prefers-color-scheme: ${name})`);
+      if (list.matches) {
+        this.theme = name;
+      }
+      const handler = (ev: MediaQueryListEvent) => {
+        if (ev.matches) {
+          this.theme = name;
+        }
+      };
+      list.addListener(handler);
+      this.colorSchemeWatcherList.push({ list, handler });
+    });
+  }
+
+  private stopWatchColorScheme() {
+    this.colorSchemeWatcherList.forEach(row => {
+      row.list.removeListener(row.handler);
+    });
+    this.colorSchemeWatcherList = [];
   }
 
   protected created() {
@@ -338,6 +464,7 @@ export default class VStackContext extends Vue {
       window.addEventListener('load', this.updateContainerRect, false);
       window.addEventListener('resize', this.updateContainerRect, false);
       document.addEventListener('keydown', this.keyDownHandler, false);
+      this.startWatchColorScheme();
     }
   }
 
@@ -346,6 +473,7 @@ export default class VStackContext extends Vue {
       window.removeEventListener('load', this.updateContainerRect, false);
       window.removeEventListener('resize', this.updateContainerRect, false);
       document.removeEventListener('keydown', this.keyDownHandler, false);
+      this.stopWatchColorScheme();
     }
   }
 }

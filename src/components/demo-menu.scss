@@ -5,11 +5,11 @@
     border: solid 1px #000;
     background: #fff;
     padding: 10px;
+    user-select: none;
     cursor: pointer;
   }
 
   &__option {
-    background: #fff;
     padding: 10px;
     cursor: pointer;
     white-space: nowrap;

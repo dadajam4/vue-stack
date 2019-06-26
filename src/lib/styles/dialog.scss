@@ -1,7 +1,8 @@
 //
 // Dialog
 //
-.vv-stack-dialog {
+
+.v-stack-dialog {
   position: fixed;
   top: 0;
   left: 0;
@@ -10,7 +11,6 @@
   padding: 0;
   overflow: auto;
   pointer-events: none;
-  color: rgba(0, 0, 0, 0.87);
   box-sizing: border-box;
 
   &__scroller {
@@ -32,11 +32,7 @@
     display: inline-block;
     margin: 24px;
     border-radius: 2px;
-    box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2),
-      0px 24px 38px 3px rgba(0, 0, 0, 0.14),
-      0px 9px 46px 8px rgba(0, 0, 0, 0.12);
-
-    background: #fff;
+    box-shadow: $v-stack-dialog-shadow;
   }
 
   &__header {
@@ -61,70 +57,6 @@
   }
 
   &__action {
-    position: relative;
-    box-sizing: border-box;
-    appearance: none;
-    border: 0;
-    outline: 0;
-    -webkit-tap-highlight-color: transparent;
-    font: inherit;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    cursor: pointer;
-    margin: 0px;
-    font-size: 14px;
-    height: 36px;
-    border-radius: 2px;
-    min-width: 88px;
-    padding: 0 16px;
-    border-radius: 2px;
-
-    &:before {
-      content: "";
-      position: absolute;
-      display: block;
-      border-radius: inherit;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: currentColor;
-      opacity: 0;
-      transition: opacity 0.25s;
-    }
-
-    &__content {
-      position: relative;
-      border-radius: inherit;
-      display: flex;
-      line-height: 1;
-      align-items: center;
-      justify-content: center;
-    }
-
-    &:hover,
-    &:focus {
-      &:before {
-        opacity: 0.1;
-      }
-    }
-
-    &:active {
-      &:before {
-        opacity: 0.2;
-      }
-    }
-
-    &--ok {
-      color: #1867c0;
-    }
-
-    &--cancel {
-      color: #6c757d;
-    }
-
     &--spacer {
       margin-left: auto;
     }
@@ -132,12 +64,12 @@
 
   &[v-stack--outside-click-animate] {
     animation-duration: 0.15s;
-    animation-name: vv-stack-dialog-outside-click;
+    animation-name: v-stack-dialog-outside-click;
     animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 }
 
-@keyframes vv-stack-dialog-outside-click {
+@keyframes v-stack-dialog-outside-click {
   0% {
     transform: scale(1);
   }
