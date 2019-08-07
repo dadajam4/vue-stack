@@ -61,6 +61,33 @@ export default class VStackPanel extends Mixins<VStack, VStackTheme>(
 
     children.push($scroller);
 
+    const panelChildren: VNode[] = [
+      h(
+        'div',
+        {
+          staticClass: `${baseClassName}__inner`,
+        },
+        children,
+      ),
+    ];
+
+    if (this.$scopedSlots.controls) {
+      panelChildren.push(
+        h(
+          'div',
+          {
+            staticClass: `${baseClassName}__controls`,
+            on: {
+              click: (e: MouseEvent) => {
+                e.stopPropagation();
+              },
+            },
+          },
+          this.$scopedSlots.controls(this),
+        ),
+      );
+    }
+
     return {
       tag: this.tag,
       data: {
@@ -74,7 +101,7 @@ export default class VStackPanel extends Mixins<VStack, VStackTheme>(
           },
         },
       },
-      children,
+      children: panelChildren,
     };
   }
 }

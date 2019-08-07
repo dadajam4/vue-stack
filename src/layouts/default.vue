@@ -1,10 +1,14 @@
 <template>
   <div class="my app">
     <VStackContext />
-    <button @click="drawer = !drawer">toggle panel</button>
-    <VStackPanel v-model="drawer" panel-classes="my-panel">
+    <button @click="panelActive = !panelActive">toggle panel</button>
+    <VStackPanel v-model="panelActive" panel-classes="my-panel">
       <h2>VStackPanel</h2>
       <p v-for="n in 100" :key="n">This is text {{ n }}.</p>
+
+      <template v-slot:controls>
+        <button type="button" class="my-panel-control" @click="panelActive = false">close!!!</button>
+      </template>
     </VStackPanel>
     <nuxt />
   </div>
@@ -20,7 +24,7 @@ export default {
   },
   data() {
     return {
-      drawer: true,
+      panelActive: true,
     };
   },
 };
@@ -45,5 +49,11 @@ body {
 .my /deep/ .my-panel {
   background: rgba(0, 0, 0, 0.4);
   color: #fff;
+}
+
+.my-panel-control {
+  position: absolute;
+  right: 20px;
+  top: 20px;
 }
 </style>
