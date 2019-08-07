@@ -9,7 +9,12 @@ import {
 } from 'vue';
 import { Component, Vue, Model, Watch, Prop } from 'vue-property-decorator';
 import clickOutside from '../directives/click-outside';
-import { toNumber, pushVNodeEvent } from '../utils';
+import {
+  toNumber,
+  pushVNodeEvent,
+  attemptFocus,
+  focusFirstDescendant,
+} from '../utils';
 import { NavigationGuard } from 'vue-router';
 
 export interface RenderContentResult {
@@ -80,6 +85,7 @@ export default class VStack<V = any> extends Vue {
   @Prop() contentStyle?: string | object[] | object;
   @Prop({ type: Boolean }) stopDocumentScroll!: boolean;
   @Prop() value!: V;
+  @Prop({ type: Boolean }) focusTrap!: boolean;
 
   public needRender: boolean = false;
   private innerActive: boolean = this.active;
@@ -173,12 +179,17 @@ export default class VStack<V = any> extends Vue {
   }
 
   set isActive(active: boolean) {
-    this.isBooted = true;
+    this.setIsActive(active);
+  }
+
+  private setIsActive(active: boolean, withEmit = true) {
+    if (active) this.isBooted = true;
+
     if (this.innerActive !== active) {
       this.clearStackTimeoutId();
       if (active) this.triggerContentReadyTick();
       this.innerActive = active;
-      this.$emit('change', active);
+      withEmit && this.$emit('change', active);
       if (active) {
         this.$vstack.pushScrollStop(this);
         this.nowShowing = true;
@@ -227,11 +238,63 @@ export default class VStack<V = any> extends Vue {
     if (active) {
       this.setNeedRender(true);
     }
+    this.checkFocusTrap();
   }
 
-  @Watch('active')
-  protected onChangeActiveHandler() {
-    this.innerActive = this.active;
+  private _focusTrapper?: (ev: FocusEvent) => void;
+
+  private checkFocusTrap() {
+    if (this.$isServer) return;
+    if (this.isActive) {
+      this.setupFocusTrapper();
+    } else {
+      this.removeFocusTrapper();
+    }
+  }
+
+  private trapFocus(ev: FocusEvent) {
+    const { content } = this.$refs;
+    if (!content) return;
+    if (content.contains(ev.target as any)) {
+      return;
+    }
+
+    for (let i = 0; i < content.childNodes.length; i++) {
+      const child = content.childNodes[i];
+      if (
+        attemptFocus(child as HTMLElement) ||
+        focusFirstDescendant(child as HTMLElement)
+      ) {
+        return true;
+      }
+    }
+
+    console.log('?????');
+    return false;
+    // console.warn(ev);
+    // ev.preventDefault();
+  }
+
+  private setupFocusTrapper() {
+    this.removeFocusTrapper();
+    this._focusTrapper = (ev: FocusEvent) => {
+      if (this.$vstack.isFront(this)) {
+        this.trapFocus(ev);
+      }
+    };
+    document.addEventListener('focus', this._focusTrapper, true);
+  }
+
+  private removeFocusTrapper() {
+    if (this._focusTrapper) {
+      document.removeEventListener('focus', this._focusTrapper, true);
+      delete this._focusTrapper;
+    }
+  }
+
+  @Watch('active', { immediate: true })
+  protected onChangeActiveHandler(active: boolean) {
+    this.setIsActive(active, false);
   }
 
   @Watch('value')
@@ -357,6 +420,7 @@ export default class VStack<V = any> extends Vue {
       }
     } catch (e) {}
 
+    this.removeFocusTrapper();
     this.clearStackTimeoutId();
     this.stackIsDestroyed = true;
     this.clearNavigationGuard();
@@ -469,6 +533,7 @@ export default class VStack<V = any> extends Vue {
       this.setToFront();
       this.triggerContentReadyTick();
       this.$vstack.pushScrollStop(this);
+      this.checkFocusTrap();
     }
   }
 
@@ -548,6 +613,26 @@ export default class VStack<V = any> extends Vue {
     });
   }
 
+  protected closeConditional(e: MouseEvent) {
+    if (
+      this.nowShowing ||
+      !this.isFrontStack() ||
+      this.$vstack.hasAnyTransitioningStack
+    ) {
+      return false;
+    }
+
+    if (this.persistent) {
+      if (!this.noClickAnimation && e.target === this.$refs.backdrop) {
+        this.animateByOutsideClick();
+      }
+
+      return false;
+    }
+
+    return this.isActive;
+  }
+
   private genContent(): VNode | undefined {
     const { needRender, $scopedSlots, hasContent, $createElement: h } = this;
     const defaultSlot = $scopedSlots.default;
@@ -603,25 +688,7 @@ export default class VStack<V = any> extends Vue {
           this.close();
         },
         args: {
-          closeConditional: (e: MouseEvent) => {
-            if (
-              this.nowShowing ||
-              !this.isFrontStack() ||
-              this.$vstack.hasAnyTransitioningStack
-            ) {
-              return false;
-            }
-
-            if (this.persistent) {
-              if (!this.noClickAnimation && e.target === this.$refs.backdrop) {
-                this.animateByOutsideClick();
-              }
-
-              return false;
-            }
-
-            return this.isActive;
-          },
+          closeConditional: this.closeConditional,
         },
       } as any);
     }
@@ -660,6 +727,7 @@ export default class VStack<V = any> extends Vue {
 
     const { computedTransition } = this;
     const transitionChildren = content ? [content] : undefined;
+
     const transitionListeners = {
       beforeEnter: (el: HTMLElement) => {
         this.$vstack.addTransitioningStack(this);

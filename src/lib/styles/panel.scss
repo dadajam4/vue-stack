@@ -1,0 +1,32 @@
+//
+// Panel
+//
+
+.v-stack-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: scroll;
+  box-sizing: border-box;
+
+  &__scroller {
+    display: table;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__centerer {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  &__content {
+    text-align: left;
+    position: relative;
+    display: inline-block;
+    outline: 0;
+  }
+}

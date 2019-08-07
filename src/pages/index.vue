@@ -35,6 +35,11 @@
     </VStackMenu>
 
     <div>
+      <VStackDialog v-model="stack3" backdrop>ダイアログ</VStackDialog>
+      <button type="button" @click="stack3 = !stack3">dialog</button>
+    </div>
+
+    <div>
       <DemoMenu>
         <DemoMenuOption value="項目1">項目1</DemoMenuOption>
         <DemoMenuOption value="項目2">項目2</DemoMenuOption>
@@ -146,6 +151,11 @@ import { DemoMenu, DemoMenuOption } from '~/components';
 export default class HomeView extends Vue {
   count1: number = 0;
   count2: number = 0;
+  stack3: boolean = false;
+
+  fuga() {
+    console.log(this.stack3);
+  }
 }
 </script>
 

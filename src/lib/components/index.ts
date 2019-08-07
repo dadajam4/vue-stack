@@ -10,6 +10,8 @@ export { default as VStackMenu } from './VStackMenu';
 export * from './VStackMenu';
 export { default as VStackDialog } from './VStackDialog';
 export * from './VStackDialog';
+export { default as VStackPanel } from './VStackPanel';
+export * from './VStackPanel';
 export { default as VStackTooltip } from './VStackTooltip';
 export * from './VStackTooltip';
 export { default as VStackSnackbar } from './VStackSnackbar';

@@ -1,4 +1,5 @@
 import './styles/_index.scss';
+import './polyfills';
 
 import { PluginObject } from 'vue/types';
 export * from './components';

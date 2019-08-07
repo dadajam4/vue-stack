@@ -1,6 +1,6 @@
 {
   "name": "@dadajam4/vue-stack",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Stackable components service based on vue 2 (SSR support)",
   "main": "dist/vue-stack.common.js",
   "scripts": {

@@ -51,6 +51,7 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
   @Prop({ type: [Number, String] }) minWidth?: number | string;
   @Prop({ type: [Number, String] }) maxWidth?: number | string;
   @Prop({ type: Boolean, default: true }) stopDocumentScroll!: boolean;
+  @Prop({ type: Boolean, default: true }) focusTrap!: boolean;
 
   get contentStyles() {
     const styles: { [key: string]: string } = {
@@ -173,6 +174,14 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
       {
         staticClass: `${this.baseClassName}__content`,
         style: this.contentStyles,
+        attrs: {
+          tabindex: '0',
+        },
+        on: {
+          click: (e: MouseEvent) => {
+            e.stopPropagation();
+          },
+        },
       },
       children,
     );
@@ -204,6 +213,13 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
       tag: 'div',
       data: {
         staticClass: baseClassName,
+        on: {
+          click: (e: MouseEvent) => {
+            if (this.closeOnClick && this.closeConditional(e)) {
+              this.close();
+            }
+          },
+        },
       },
       children,
     };

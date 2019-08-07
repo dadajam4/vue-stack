@@ -10,7 +10,6 @@
   bottom: 0;
   padding: 0;
   overflow: auto;
-  pointer-events: none;
   box-sizing: border-box;
 
   &__scroller {
@@ -27,12 +26,12 @@
 
   &__content {
     text-align: left;
-    pointer-events: auto;
     position: relative;
     display: inline-block;
     margin: 24px;
     border-radius: 2px;
     box-shadow: $v-stack-dialog-shadow;
+    outline: 0;
   }
 
   &__header {

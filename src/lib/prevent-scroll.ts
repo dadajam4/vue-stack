@@ -1,42 +1,33 @@
 import { SUPPORTS_PASSIVE } from './utils';
 
+export const HAS_DOCUMENT = typeof document !== 'undefined';
+
+export interface LockPosition {
+  x: number;
+  y: number;
+}
+
 // space: 32, page up: 33, page down: 34, end: 35, home: 36
 // left: 37, up: 38, right: 39, down: 40
 export const SCROLLABLE_KEY_CODES = [32, 33, 34, 35, 36, 37, 38, 39, 40];
 
-export interface PreventScrollOptions {
-  hideScrollbar: boolean;
-}
+export const lockPosition: LockPosition = {
+  x: 0,
+  y: 0,
+};
 
-export interface PreventScrollContext {
-  options: PreventScrollOptions;
-  el: PreventScrollElement;
-  overflowOrigin?: string | null;
-  lockPosition: {
-    x: number;
-    y: number;
-  };
-}
-
-export interface PreventScrollElement extends HTMLElement {
-  __ps_ctx__: PreventScrollContext;
-}
+let htmlOverflowOrigin: string | null = null;
+let bodyOverflowOrigin: string | null = null;
 
 const eventListenerOptions: AddEventListenerOptions | boolean = SUPPORTS_PASSIVE
   ? {
       passive: false,
+      capture: false,
     }
   : false;
 
-const handleWheel = (e: WheelEvent) => {
-  e.preventDefault();
-};
-
 const handleScroll = (e: Event) => {
-  const el = e.target as PreventScrollElement;
-  if (el && el.__ps_ctx__) {
-    el.scrollTo(el.__ps_ctx__.lockPosition.x, el.__ps_ctx__.lockPosition.y);
-  }
+  window.scrollTo(lockPosition.x, lockPosition.y);
 };
 
 const handleKeydown = (e: KeyboardEvent) => {
@@ -51,50 +42,33 @@ const handleKeydown = (e: KeyboardEvent) => {
   }
 };
 
-export function enableScroll(el: Element = document.body) {
-  const _el: PreventScrollElement = <PreventScrollElement>el;
-  if (!_el.__ps_ctx__) return;
+export function enableScroll() {
+  if (!HAS_DOCUMENT || !document.scrollingElement) return;
+  const { scrollingElement: se } = document;
 
-  const { options } = _el.__ps_ctx__;
+  se.removeEventListener('scroll', handleScroll, eventListenerOptions);
+  document.removeEventListener('keydown', handleKeydown);
 
-  _el.removeEventListener('wheel', handleWheel, eventListenerOptions);
-  _el.removeEventListener('scroll', handleScroll, eventListenerOptions);
-  _el.removeEventListener('keydown', handleKeydown);
-
-  if (options.hideScrollbar) {
-    _el.style.overflow = _el.__ps_ctx__.overflowOrigin as string | null;
-  }
-  delete _el.__ps_ctx__;
+  document.documentElement.style.overflow = htmlOverflowOrigin;
+  document.body.style.overflow = bodyOverflowOrigin;
+  htmlOverflowOrigin = null;
+  bodyOverflowOrigin = null;
 }
 
-export function disableScroll(
-  el: Element = document.body,
-  opts: Partial<PreventScrollOptions> = {},
-) {
-  const { hideScrollbar = false } = opts;
+export function disableScroll() {
+  if (!HAS_DOCUMENT || !document.scrollingElement) return;
+  const { scrollingElement: se } = document;
+  lockPosition.x =
+    se.scrollLeft === undefined ? (se as any).scrollX : se.scrollLeft;
+  lockPosition.y =
+    se.scrollTop === undefined ? (se as any).scrollY : se.scrollTop;
 
-  const _el: PreventScrollElement = <PreventScrollElement>el;
-  if (_el.__ps_ctx__) return;
+  const { documentElement } = document;
+  htmlOverflowOrigin = documentElement.style.overflow;
+  bodyOverflowOrigin = document.body.style.overflow;
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
 
-  const options = {
-    hideScrollbar,
-  };
-
-  _el.__ps_ctx__ = {
-    options,
-    el: _el,
-    overflowOrigin: _el.style.overflow,
-    lockPosition: {
-      x: _el.scrollLeft || (_el as any).scrollX,
-      y: _el.scrollTop || (_el as any).scrollY,
-    },
-  };
-
-  if (options.hideScrollbar) {
-    _el.style.overflow = 'hidden';
-  }
-
-  _el.addEventListener('wheel', handleWheel, eventListenerOptions);
-  _el.addEventListener('scroll', handleScroll, eventListenerOptions);
-  _el.addEventListener('keydown', handleKeydown);
+  se.addEventListener('scroll', handleScroll, eventListenerOptions);
+  document.addEventListener('keydown', handleKeydown);
 }
