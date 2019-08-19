@@ -191,12 +191,10 @@ export default class VStack<V = any> extends Vue {
       this.innerActive = active;
       withEmit && this.$emit('change', active);
       if (active) {
-        this.$vstack.pushScrollStop(this);
         this.nowShowing = true;
         this.setToFront();
         this.$emit('show', this);
       } else {
-        this.$vstack.removeScrollStop(this);
         this.nowClosing = true;
         this.$emit('close', this);
       }
@@ -424,7 +422,6 @@ export default class VStack<V = any> extends Vue {
     this.clearStackTimeoutId();
     this.stackIsDestroyed = true;
     this.clearNavigationGuard();
-    this.$vstack.removeScrollStop(this);
     this.$vstack.remove(this);
   }
 
@@ -532,7 +529,6 @@ export default class VStack<V = any> extends Vue {
     if (this.isActive) {
       this.setToFront();
       this.triggerContentReadyTick();
-      this.$vstack.pushScrollStop(this);
       this.checkFocusTrap();
     }
   }

@@ -4,6 +4,7 @@ import { Component, Mixins, Prop } from 'vue-property-decorator';
 import VStack, { RenderContentResult } from './VStack';
 import VStackBtn from './VStackBtn';
 import VStackTheme from './VStackTheme';
+import bodyScrollLock from '../directives/body-scroll-lock';
 
 export type VStackDialogActionSlot = (
   payload: VStackDialogActionSlotPayload,
@@ -38,6 +39,9 @@ const toStyleWidth = (width: number | string): string => {
 
 @Component({
   name: 'v-stack-dialog',
+  directives: {
+    bodyScrollLock,
+  },
 })
 export default class VStackDialog extends Mixins<VStack, VStackTheme>(
   VStack,
@@ -213,6 +217,7 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
       tag: 'div',
       data: {
         staticClass: baseClassName,
+        directives: [{ name: 'body-scroll-lock', value: this.isActive }],
         on: {
           click: (e: MouseEvent) => {
             if (this.closeOnClick && this.closeConditional(e)) {

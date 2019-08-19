@@ -15,7 +15,6 @@ import {
   VueStackThemeName,
   vueStackThemeNames,
 } from '../settings';
-import { enableScroll, disableScroll } from '../prevent-scroll';
 import { warn, error } from '../utils';
 
 export interface VStackDynamicDialogOptions {
@@ -114,40 +113,6 @@ export default class VStackContext extends Vue {
     const id = this.uid + 1;
     this.uid = id;
     return id;
-  }
-
-  private scrollStoppers: number[] = [];
-
-  pushScrollStop(stack: VStack) {
-    if (stack.stopDocumentScroll) {
-      const { stackId } = stack;
-      if (!this.scrollStoppers.includes(stackId)) {
-        this.scrollStoppers.push(stackId);
-        this.scrollStopCheck();
-      }
-    }
-  }
-
-  removeScrollStop(stack: VStack) {
-    const index = this.scrollStoppers.indexOf(stack.stackId);
-    if (index !== -1) {
-      this.scrollStoppers.splice(index, 1);
-      this.scrollStopCheck();
-    }
-  }
-
-  private internalScrollStoped: boolean = false;
-
-  private scrollStopCheck() {
-    const before = this.internalScrollStoped;
-    const now = this.scrollStoppers.length > 0;
-    if (before === now) return;
-    this.internalScrollStoped = now;
-    if (now) {
-      disableScroll();
-    } else {
-      enableScroll();
-    }
   }
 
   add(stack: VStack): number {

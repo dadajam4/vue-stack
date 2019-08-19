@@ -2,9 +2,13 @@ import { CreateElement, VNode } from 'vue';
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 import VStack, { RenderContentResult } from './VStack';
 import VStackTheme from './VStackTheme';
+import bodyScrollLock from '../directives/body-scroll-lock';
 
 @Component({
   name: 'v-stack-panel',
+  directives: {
+    bodyScrollLock,
+  },
 })
 export default class VStackPanel extends Mixins<VStack, VStackTheme>(
   VStack,
@@ -66,6 +70,7 @@ export default class VStackPanel extends Mixins<VStack, VStackTheme>(
         'div',
         {
           staticClass: `${baseClassName}__inner`,
+          directives: [{ name: 'body-scroll-lock', value: this.isActive }],
         },
         children,
       ),
