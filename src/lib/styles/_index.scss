@@ -14,3 +14,7 @@
   font-family: $v-stack-font-family;
   line-height: 1.5;
 }
+
+[data-vstack-body-scroll-lock] {
+  overflow: hidden;
+}
