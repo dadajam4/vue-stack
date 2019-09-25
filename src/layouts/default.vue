@@ -4,6 +4,13 @@
     <button @click="panelActive = !panelActive">toggle panel</button>
     <VStackPanel v-model="panelActive" panel-classes="my-panel">
       <h2>VStackPanel</h2>
+
+      <div>
+        <DemoMenu>
+          <DemoMenuOption v-for="n in 50" :key="n" :value="`項目${n}`">項目{{ n }}</DemoMenuOption>
+        </DemoMenu>
+      </div>
+
       <p v-for="n in 100" :key="n">This is text {{ n }}.</p>
 
       <template v-slot:controls>
@@ -16,11 +23,14 @@
 
 <script lang="ts">
 import { VStackContext, VStackPanel } from '~/lib';
+import { DemoMenu, DemoMenuOption } from '~/components';
 
 export default {
   components: {
     VStackContext,
     VStackPanel,
+    DemoMenu,
+    DemoMenuOption,
   },
   data() {
     return {

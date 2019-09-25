@@ -41,9 +41,7 @@
 
     <div>
       <DemoMenu>
-        <DemoMenuOption value="項目1">項目1</DemoMenuOption>
-        <DemoMenuOption value="項目2">項目2</DemoMenuOption>
-        <DemoMenuOption value="項目3">項目3です</DemoMenuOption>
+        <DemoMenuOption v-for="n in 50" :key="n" :value="`項目${n}`">項目{{ n }}</DemoMenuOption>
       </DemoMenu>
     </div>
 

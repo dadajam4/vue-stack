@@ -3,6 +3,7 @@ import { Component, Mixins, Prop } from 'vue-property-decorator';
 import VStack, { RenderContentResult } from './VStack';
 import VStackTheme from './VStackTheme';
 import { warn, toNumber } from '../utils';
+import bodyScrollLock from '../directives/body-scroll-lock';
 
 const DEFAULT_CONTAINER_MARGIN = 20;
 const DEFAULT_DISTANCE = 10;
@@ -19,6 +20,9 @@ interface ComputedRect {
 
 @Component({
   name: 'v-stack-menu',
+  directives: {
+    bodyScrollLock,
+  },
 })
 export default class VStackMenu extends Mixins<VStack, VStackTheme>(
   VStack,
@@ -392,6 +396,7 @@ export default class VStackMenu extends Mixins<VStack, VStackTheme>(
       tag: 'div',
       data: {
         staticClass: 'v-stack-menu',
+        directives: [{ name: 'body-scroll-lock', value: this.isActive }],
         style: {
           ...this.menuStyles,
           ...this.themeStyles,
