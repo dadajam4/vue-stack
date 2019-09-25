@@ -26,6 +26,7 @@ export interface VueStackPartialdTheme extends Partial<VueStackTheme> {}
 export interface VueStackSettings {
   defaultTheme: VueStackThemeName;
   usePrefersColorScheme: boolean;
+  useScrollStop: boolean;
   zIndex: number;
   ripple: boolean;
   themes: {
@@ -71,6 +72,7 @@ export const vueStackThemeSettingsDefaults = (
   const settings: VueStackSettings = {
     defaultTheme: 'light',
     usePrefersColorScheme: true,
+    useScrollStop: true,
     zIndex: 32767,
     ripple: true,
     themes: {

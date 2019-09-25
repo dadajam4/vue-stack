@@ -1,4 +1,4 @@
-import { VNodeDirective } from 'vue/types/vnode';
+import { VNodeDirective, VNode } from 'vue/types/vnode';
 import { disableBodyScroll, enableBodyScroll } from '../bodyScrollLock';
 
 export interface ClickOutsideDirective extends VNodeDirective {
@@ -51,11 +51,17 @@ const stacks = new Stacks();
 export default {
   name: 'body-scroll-lock',
 
-  inserted(el: HTMLElement, binding: ClickOutsideDirective) {
+  inserted(el: HTMLElement, binding: ClickOutsideDirective, vnode: VNode) {
+    if (vnode.context && !vnode.context.$vstackSettings.useScrollStop) {
+      return;
+    }
     binding.value && stacks.push(el);
   },
 
-  componentUpdated(el, binding: ClickOutsideDirective) {
+  componentUpdated(el, binding: ClickOutsideDirective, vnode: VNode) {
+    if (vnode.context && !vnode.context.$vstackSettings.useScrollStop) {
+      return;
+    }
     if (binding.value) {
       stacks.push(el);
     } else {
