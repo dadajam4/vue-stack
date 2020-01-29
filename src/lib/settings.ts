@@ -34,11 +34,17 @@ export interface VueStackSettings {
     dark: VueStackTheme;
   };
   strings: {
-    ok: VueStackString;
-    cancel: VueStackString;
-    close: VueStackString;
+    ok?: VueStackString;
+    cancel?: VueStackString;
+    close?: VueStackString;
   };
   dialog: VStackDynamicDialogOptions;
+  dialogActions: {
+    cancel: {
+      outline: boolean;
+      color?: string;
+    };
+  };
   snackbar: Omit<VStackSnackbarDynamicSettings, 'content'>;
 }
 
@@ -56,7 +62,7 @@ const merge = <T = object>(target: T, source: object): T => {
       const sourceValue = source[key];
       if (sourceValue === undefined) continue;
 
-      if (sourceValue instanceof Object) {
+      if (sourceValue instanceof Object && typeof sourceValue !== 'function') {
         target[key] = merge(target[key], sourceValue);
       } else {
         target[key] = sourceValue;
@@ -189,6 +195,13 @@ export const vueStackThemeSettingsDefaults = (
       navigationGuard: true,
       minWidth: 280,
       maxWidth: 540,
+      header: '',
+    },
+    dialogActions: {
+      cancel: {
+        outline: true,
+        color: 'primary',
+      },
     },
   };
 

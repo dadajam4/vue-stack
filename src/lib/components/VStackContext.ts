@@ -18,6 +18,8 @@ import {
 import { warn, error } from '../utils';
 
 export interface VStackDynamicDialogOptions {
+  contentClass?: string;
+  dialogType?: string;
   transition?: string;
   backdrop?: boolean | string;
   closeOnEsc?: boolean;
@@ -26,7 +28,7 @@ export interface VStackDynamicDialogOptions {
   width?: number | string;
   minWidth?: number | string;
   maxWidth?: number | string;
-  header?: VNodeChildren;
+  header?: VNodeChildren | ((vm: VStackDialog) => VNodeChildren);
   actions?: VStackDialogAction[];
   content?: VNodeChildren;
   theme?: VueStackThemeName;
@@ -234,16 +236,18 @@ export default class VStackContext extends Vue {
       minWidth,
       maxWidth,
       theme,
+      header,
     } = {
       ...this.$vstackSettings.dialog,
       ...opts,
     };
-
     return this.dynnamic({
       Ctor: VStackDialog,
       data: {
         props: {
-          header: opts.header,
+          contentClass: opts.contentClass,
+          dialogType: opts.dialogType,
+          header,
           actions: opts.actions,
           transition,
           backdrop,
@@ -267,6 +271,9 @@ export default class VStackContext extends Vue {
       ...(typeof opts === 'string' ? undefined : opts),
       content,
     };
+    if (opts.dialogType == null) {
+      opts.dialogType = 'alert';
+    }
     opts.actions = opts.actions || [
       {
         type: 'ok',
@@ -288,12 +295,15 @@ export default class VStackContext extends Vue {
       ...(typeof opts === 'string' ? undefined : opts),
       content,
     };
+    if (opts.dialogType == null) {
+      opts.dialogType = 'confirm';
+    }
     opts.actions = opts.actions || [
       {
         type: 'cancel',
+        ...this.$vstackSettings.dialogActions.cancel,
         text: this.getString('cancel'),
         spacer: true,
-        outline: true,
         click: dialog => {
           dialog.resolve(false);
         },

@@ -48,9 +48,10 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
   VStackTheme,
 ) {
   @Prop({ type: String, default: 'v-stack-slide-y' }) transition!: string;
-  @Prop() header?: VNodeChildren;
+  @Prop() header?: VNodeChildren | ((vm: VStackDialog) => VNodeChildren);
   @Prop({ type: Array }) actions?: VStackDialogAction[];
   @Prop({ type: String, default: 'v-stack-dialog' }) baseClassName!: string;
+  @Prop({ type: String }) dialogType?: string;
   @Prop({ type: [Number, String] }) width?: number | string;
   @Prop({ type: [Number, String] }) minWidth?: number | string;
   @Prop({ type: [Number, String] }) maxWidth?: number | string;
@@ -77,10 +78,11 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
   }
 
   private genStackDialogHeader(): VNode | undefined {
-    const children = this.tryGetVNodeChildren(
-      this.$scopedSlots.header,
-      this.header,
-    );
+    let { header } = this;
+    if (typeof header === 'function') {
+      header = header(this);
+    }
+    const children = this.tryGetVNodeChildren(this.$scopedSlots.header, header);
     if (!children) return;
     return this.$createElement(
       'div',
@@ -136,9 +138,7 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
                 color: action.color,
                 outline: action.outline,
               },
-              staticClass: `${baseClassName}__action ${baseClassName}__action--${
-                action.type
-              }`,
+              staticClass: `${baseClassName}__action ${baseClassName}__action--${action.type}`,
               class: {
                 [`${baseClassName}__action--spacer`]: action.spacer,
               },
@@ -192,7 +192,7 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
   }
 
   protected renderContent(h: CreateElement): RenderContentResult {
-    const { baseClassName } = this;
+    const { baseClassName, dialogType } = this;
     const children: VNode[] = [];
 
     const $scroller = h(
@@ -213,10 +213,15 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
 
     children.push($scroller);
 
+    let staticClass = baseClassName;
+    if (dialogType) {
+      staticClass = `${staticClass} ${baseClassName}--${dialogType}`;
+    }
+
     return {
       tag: 'div',
       data: {
-        staticClass: baseClassName,
+        staticClass,
         directives: [{ name: 'body-scroll-lock', value: this.isActive }],
         on: {
           click: (e: MouseEvent) => {
