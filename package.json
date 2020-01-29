@@ -1,6 +1,6 @@
 {
   "name": "@dadajam4/vue-stack",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Stackable components service based on vue 2 (SSR support)",
   "main": "dist/vue-stack.common.js",
   "scripts": {
@@ -41,7 +41,7 @@
   "types": "types/index.d.ts",
   "sideeffects": false,
   "devDependencies": {
-    "@dadajam4/plugboy": "^0.1.6",
+    "@dadajam4/plugboy": "^0.2.0",
     "@nuxt/typescript": "^2.8.1",
     "@vue/babel-preset-app": "^3.8.0",
     "node-sass": "^4.12.0",
