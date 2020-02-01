@@ -37,7 +37,11 @@ export default class VStackSnackbar extends Mixins<VStack, VStackThemeItem>(
   }
 
   get computedTransition() {
-    return VStackSnackbarTransition;
+    /**
+     * @todo
+     *   any
+     */
+    return VStackSnackbarTransition as any;
   }
 
   get computedPosition(): SnackPosition {
