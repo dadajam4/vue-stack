@@ -4,7 +4,7 @@
     <div>
       <nuxt-link to="/page2">page2</nuxt-link>
     </div>
-    <VStackMenu content-class="my-menu">
+    <VStackMenu content-class="my-menu" overlap>
       <template v-slot:activator="stack">
         <a href="javascript:void(0);">Stack1 Activator {{ stack.isActive }}</a>
       </template>

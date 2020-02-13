@@ -46,6 +46,7 @@ export default class VStackMenu extends Mixins<VStack, VStackTheme>(
 
   @Prop({ type: [Number, String], default: DEFAULT_RESIZE_WATCH_DEBOUNCE })
   resizeWatchDebounce!: number | string;
+  @Prop({ type: Boolean }) overlap!: boolean;
 
   private pageXOffset: number = 0;
   private pageYOffset: number = 0;
@@ -141,6 +142,7 @@ export default class VStackMenu extends Mixins<VStack, VStackTheme>(
       maxRight,
       maxBottom,
       computedDistance,
+      overlap,
     } = this;
 
     let {
@@ -189,8 +191,10 @@ export default class VStackMenu extends Mixins<VStack, VStackTheme>(
 
     if (isTop) {
       top = activatorTop - height;
+      if (overlap) top += activatorHeight;
     } else if (isBottom) {
       top = activatorBottom;
+      if (overlap) top -= activatorHeight;
     } else {
       top = activatorTop - (height - activatorHeight) / 2;
     }
@@ -199,24 +203,28 @@ export default class VStackMenu extends Mixins<VStack, VStackTheme>(
 
     if (isLeft) {
       left = activatorLeft - width;
+      if (overlap) left += activatorWidth;
     } else if (isRight) {
       left = activatorRight;
+      if (overlap) left -= activatorWidth;
     } else {
       left = activatorLeft - (width - activatorWidth) / 2;
     }
 
     left += pageXOffset;
 
-    if (isBottom) {
-      top += computedDistance;
-    } else if (isTop) {
-      top -= computedDistance;
-    }
+    if (!overlap) {
+      if (isBottom) {
+        top += computedDistance;
+      } else if (isTop) {
+        top -= computedDistance;
+      }
 
-    if (isRight) {
-      left += computedDistance;
-    } else if (isLeft) {
-      left -= computedDistance;
+      if (isRight) {
+        left += computedDistance;
+      } else if (isLeft) {
+        left -= computedDistance;
+      }
     }
 
     let right = left + width;
