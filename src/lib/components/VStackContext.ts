@@ -187,7 +187,7 @@ export default class VStackContext extends Vue {
     this.height = window.innerHeight;
   }
 
-  dynnamic<V = any>(setting: VStackDynamicSetting) {
+  dynamic<V = any>(setting: VStackDynamicSetting) {
     const { dynamicContainer } = this;
     if (!dynamicContainer) {
       console.warn(setting);
@@ -217,7 +217,7 @@ export default class VStackContext extends Vue {
     };
     delete props.content;
 
-    return this.dynnamic({
+    return this.dynamic({
       Ctor: VStackSnackbar,
       data: {
         props,
@@ -241,7 +241,7 @@ export default class VStackContext extends Vue {
       ...this.$vstackSettings.dialog,
       ...opts,
     };
-    return this.dynnamic({
+    return this.dynamic({
       Ctor: VStackDialog,
       data: {
         props: {
