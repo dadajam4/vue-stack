@@ -228,6 +228,7 @@ export default class VStackContext extends Vue {
 
   dialog<V = any>(opts: VStackDynamicDialogOptions): Promise<V> {
     const {
+      contentClass,
       transition,
       backdrop,
       closeOnEsc,
@@ -241,11 +242,12 @@ export default class VStackContext extends Vue {
       ...this.$vstackSettings.dialog,
       ...opts,
     };
+
     return this.dynamic({
       Ctor: VStackDialog,
       data: {
         props: {
-          contentClass: opts.contentClass,
+          contentClass,
           dialogType: opts.dialogType,
           header,
           actions: opts.actions,

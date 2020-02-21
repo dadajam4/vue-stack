@@ -58,16 +58,24 @@ export interface VueStackPartialedSettings
 
 const merge = <T = object>(target: T, source: object): T => {
   for (const key of Object.keys(source)) {
-    if (key in target) {
-      const sourceValue = source[key];
-      if (sourceValue === undefined) continue;
+    const sourceValue = source[key];
+    if (sourceValue === undefined) continue;
 
-      if (sourceValue instanceof Object && typeof sourceValue !== 'function') {
-        target[key] = merge(target[key], sourceValue);
-      } else {
-        target[key] = sourceValue;
-      }
+    if (sourceValue instanceof Object && typeof sourceValue !== 'function') {
+      target[key] = merge(target[key], sourceValue);
+    } else {
+      target[key] = sourceValue;
     }
+    // if (key in target) {
+    //   const sourceValue = source[key];
+    //   if (sourceValue === undefined) continue;
+
+    //   if (sourceValue instanceof Object && typeof sourceValue !== 'function') {
+    //     target[key] = merge(target[key], sourceValue);
+    //   } else {
+    //     target[key] = sourceValue;
+    //   }
+    // }
   }
   return target;
 };
@@ -188,6 +196,7 @@ export const vueStackThemeSettingsDefaults = (
       color: 'dark',
     },
     dialog: {
+      contentClass: 'v-stack-dynamic-dialog',
       transition: 'v-stack-slide-y',
       backdrop: true,
       closeOnEsc: true,

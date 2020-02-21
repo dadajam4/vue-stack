@@ -3,7 +3,7 @@ import VueStack, { VueStackOptions } from '~/lib';
 
 Vue.use<VueStackOptions>(VueStack, {
   // Customize example
-  defaultTheme: 'dark',
+  defaultTheme: 'light',
   usePrefersColorScheme: false,
   themes: {
     dark: {
@@ -35,6 +35,7 @@ Vue.use<VueStackOptions>(VueStack, {
         }),
       ];
     },
+    theme: 'dark',
   },
   dialogActions: {
     cancel: {
