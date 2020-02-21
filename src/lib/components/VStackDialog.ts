@@ -93,14 +93,17 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
     );
   }
 
+  protected createAdditionalBody(h: CreateElement): VNodeChildren | void {}
+
   private genStackDialogBody(): VNode {
     const defaultSlot = this.$scopedSlots.default;
+    const additionalBody = this.createAdditionalBody(this.$createElement);
     return this.$createElement(
       'div',
       {
         staticClass: `${this.baseClassName}__body`,
       },
-      defaultSlot && defaultSlot(this),
+      additionalBody || (defaultSlot && defaultSlot(this)),
     );
   }
 
