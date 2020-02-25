@@ -16,7 +16,7 @@ export default class VStackPanel extends Mixins<VStack, VStackTheme>(
 ) {
   @Prop({ type: String, default: 'v-stack-panel' }) baseClassName!: string;
   @Prop({ type: String, default: 'div' }) tag!: string;
-  @Prop({ type: Boolean, default: true }) stopDocumentScroll!: boolean;
+  // @Prop({ type: Boolean, default: true }) stopDocumentScroll!: boolean;
   @Prop() panelClasses?: any;
   @Prop() contentClasses?: any;
   @Prop({ type: Boolean, default: true }) focusTrap!: boolean;

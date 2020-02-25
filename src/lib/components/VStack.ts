@@ -83,7 +83,7 @@ export default class VStack<V = any> extends Vue {
   @Prop([String, Number]) zIndex?: string | number;
   @Prop() contentClass?: any;
   @Prop() contentStyle?: string | object[] | object;
-  @Prop({ type: Boolean }) stopDocumentScroll!: boolean;
+  // @Prop({ type: Boolean }) stopDocumentScroll!: boolean;
   @Prop() value!: V;
   @Prop({ type: Boolean }) focusTrap!: boolean;
 

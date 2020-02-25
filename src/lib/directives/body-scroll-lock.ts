@@ -5,6 +5,9 @@ export interface ClickOutsideDirective extends VNodeDirective {
   value?: boolean;
 }
 
+export const BODY_SCROLL_LOCK_SCROLL_ATTRIBUTE =
+  'data-vstack-scroll-lock-scroller';
+
 class Stacks {
   els: HTMLElement[] = [];
   active: boolean = false;
@@ -30,7 +33,10 @@ class Stacks {
 
   push(el: HTMLElement) {
     if (!this.els.includes(el)) {
-      disableBodyScroll(el);
+      const lockElement =
+        el.querySelector(`[${BODY_SCROLL_LOCK_SCROLL_ATTRIBUTE}]`) || el;
+
+      disableBodyScroll(lockElement);
       this.els.push(el);
       this.check();
     }
@@ -39,7 +45,10 @@ class Stacks {
   remove(el: HTMLElement) {
     const index = this.els.indexOf(el);
     if (index !== -1) {
-      enableBodyScroll(el);
+      const lockElement =
+        el.querySelector(`[${BODY_SCROLL_LOCK_SCROLL_ATTRIBUTE}]`) || el;
+
+      enableBodyScroll(lockElement);
       this.els.splice(index, 1);
       this.check();
     }

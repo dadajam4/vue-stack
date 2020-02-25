@@ -55,7 +55,7 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
   @Prop({ type: [Number, String] }) width?: number | string;
   @Prop({ type: [Number, String] }) minWidth?: number | string;
   @Prop({ type: [Number, String] }) maxWidth?: number | string;
-  @Prop({ type: Boolean, default: true }) stopDocumentScroll!: boolean;
+  // @Prop({ type: Boolean, default: true }) stopDocumentScroll!: boolean;
   @Prop({ type: Boolean, default: true }) focusTrap!: boolean;
 
   get contentStyles() {

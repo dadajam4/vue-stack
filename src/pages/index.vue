@@ -28,7 +28,7 @@
     <button @click="count2 = count2 + 1">stack2({{ count2 }})</button>
 
     <VStackMenu content-class="my-menu" open-on-contextmenu>
-      <template v-slot:activator="stack">
+      <template v-slot:activator>
         <button type="button">open on context menu</button>
       </template>
       <div>コンテキストメニュー</div>
@@ -48,7 +48,7 @@
     <div>
       テキストが入ります。
       <VStackTooltip>
-        <template v-slot:activator="stack">
+        <template v-slot:activator>
           <a href="javascript:void(0);">ここにツールチップ</a>
         </template>
         ツールチップメッセージ
@@ -58,7 +58,7 @@
     <div>
       <p>あいうえお</p>
       <VStackDialog backdrop>
-        <template v-slot:activator="stack">
+        <template v-slot:activator>
           <a href="javascript:void(0);">ダイアログ</a>
         </template>
         <template v-slot:header>ダイアログへっだ</template>
@@ -67,7 +67,7 @@
           <div>
             テキストが入ります。
             <VStackTooltip>
-              <template v-slot:activator="stack">
+              <template v-slot:activator>
                 <a href="javascript:void(0);">ここにツールチップ</a>
               </template>
               ツールチップメッセージ
@@ -75,7 +75,7 @@
           </div>
 
           <VStackDialog backdrop width="100">
-            <template v-slot:activator="stack">
+            <template v-slot:activator>
               <a href="javascript:void(0);">ダイアログ</a>
             </template>
             <template v-slot:header>ダイアログへっだ</template>
@@ -84,7 +84,7 @@
               <div>
                 テキストが入ります。
                 <VStackTooltip>
-                  <template v-slot:activator="stack">
+                  <template v-slot:activator>
                     <a href="javascript:void(0);">ここにツールチップ</a>
                   </template>
                   ツールチップメッセージ
@@ -103,7 +103,7 @@
     <div>
       右の方にある感じ。右の方にある感じ。右の方にある感じ。右の方にある感じ。
       <VStackMenu content-class="my-menu" top>
-        <template v-slot:activator="stack">
+        <template v-slot:activator>
           <a href="javascript:void(0);">Click!!</a>
         </template>
         <div>StackですよStackですよStackですよStackですよ</div>
@@ -111,24 +111,42 @@
     </div>
 
     <VStackMenu content-class="my-menu" open-on-hover top>
-      <template v-slot:activator="stack">
+      <template v-slot:activator>
         <a href="javascript:void(0);">Mouse Enter!!</a>
       </template>
       <div>Stack</div>
     </VStackMenu>
 
     <VStackMenu content-class="my-menu" top>
-      <template v-slot:activator="stack">
+      <template v-slot:activator>
         <a href="javascript:void(0);">Click!!</a>
       </template>
       <div>Stack</div>
+    </VStackMenu>
+
+    <VStackMenu content-class="my-custom-menu">
+      <template v-slot:activator>
+        <a
+          href="javascript:void(0);"
+          style="display: inline-block; background: #fa0; padding: 10px;"
+        >カスタムメニュー（スクロールエリアがカスタムです）</a>
+      </template>
+      <div class="my-custom-menu__header">ヘッダー（ここはスクロールしません）</div>
+      <div class="my-custom-menu__body" v-bind="{[BODY_SCROLL_LOCK_SCROLL_ATTRIBUTE]: '1'}">
+        <p v-for="n in 100" :key="n">段落({{ n }}) ここはスクロールします</p>
+      </div>
     </VStackMenu>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator';
-import { VStackMenu, VStackTooltip, VStackDialog } from '~/lib';
+import {
+  VStackMenu,
+  VStackTooltip,
+  VStackDialog,
+  BODY_SCROLL_LOCK_SCROLL_ATTRIBUTE,
+} from '~/lib';
 import { DemoMenu, DemoMenuOption } from '~/components';
 
 @Component({
@@ -151,6 +169,10 @@ export default class HomeView extends Vue {
   count2: number = 0;
   stack3: boolean = false;
 
+  get BODY_SCROLL_LOCK_SCROLL_ATTRIBUTE() {
+    return BODY_SCROLL_LOCK_SCROLL_ATTRIBUTE;
+  }
+
   fuga() {
     console.log(this.stack3);
   }
@@ -162,5 +184,26 @@ export default class HomeView extends Vue {
   width: 800px;
   background: #fcc;
   margin: 0 auto;
+}
+
+.my-custom-menu {
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    flex: 0 0 50px;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    white-space: nowrap;
+    font-size: 12px;
+    border-bottom: solid 1px #000;
+  }
+
+  &__body {
+    flex: 1 1 100%;
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
 }
 </style>

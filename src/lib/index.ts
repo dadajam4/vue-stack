@@ -6,6 +6,8 @@ export * from './components';
 export * from './directives';
 export * from './components/VStackContext';
 
+export { BODY_SCROLL_LOCK_SCROLL_ATTRIBUTE } from './directives/body-scroll-lock';
+
 import {
   VueStackPartialedSettings,
   vueStackThemeSettingsDefaults,
