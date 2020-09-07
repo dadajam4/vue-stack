@@ -1,7 +1,16 @@
 import { CreateElement } from 'vue';
 import { Component, Mixins, Prop } from 'vue-property-decorator';
-import VStack, { RenderContentResult } from './VStack';
-import VStackTheme from './VStackTheme';
+import VStack, {
+  RenderContentResult,
+  VStackProps,
+  VStackEmits,
+  VStackScopedSlots,
+} from './VStack';
+import VStackTheme, {
+  VStackThemeProps,
+  VStackThemeEmits,
+  VStackThemeScopedSlots,
+} from './VStackTheme';
 import { warn, toNumber } from '../utils';
 import bodyScrollLock from '../directives/body-scroll-lock';
 
@@ -17,6 +26,32 @@ interface ComputedRect {
   width: number;
   height: number;
 }
+
+export interface VStackMenuProps<V = any>
+  extends VStackProps<V>,
+    VStackThemeProps {
+  top?: boolean;
+  bottom?: boolean;
+  left?: boolean;
+  right?: boolean;
+  allowOverflow?: boolean;
+  width?: number | string | 'fit';
+  height?: number | string | 'fit';
+  maxWidth?: number | string | 'fit';
+  maxHeight?: number | string | 'fit';
+  distance?: number | string;
+  edgeMargin?: number | string;
+  resizeWatchDebounce?: number | string;
+  overlap?: boolean;
+}
+
+export interface VStackMenuEmits<V = any>
+  extends VStackEmits<V>,
+    VStackThemeEmits {}
+
+export interface VStackMenuScopedSlots<V = any>
+  extends VStackScopedSlots<V>,
+    VStackThemeScopedSlots {}
 
 @Component({
   name: 'v-stack-menu',
@@ -332,13 +367,13 @@ export default class VStackMenu extends Mixins<VStack, VStackTheme>(
     }
   }
 
-  private updateRects() {
+  updateRects() {
     this.updatePageOffset();
     this.updateMyRect();
     this.updateActivatorRect();
   }
 
-  private updateMyRect() {
+  updateMyRect() {
     const { content } = this.$refs;
 
     if (!content) {
@@ -376,7 +411,7 @@ export default class VStackMenu extends Mixins<VStack, VStackTheme>(
     };
   }
 
-  private updateActivatorRect() {
+  updateActivatorRect() {
     const { $activator } = this;
     if (!$activator) {
       this.activatorRect = null;

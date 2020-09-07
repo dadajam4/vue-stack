@@ -1,8 +1,33 @@
 import { CreateElement } from 'vue';
 import { Component, Mixins, Prop } from 'vue-property-decorator';
-import { RenderContentResult } from './VStack';
+import {
+  RenderContentResult,
+  VStackProps,
+  VStackEmits,
+  VStackScopedSlots,
+} from './VStack';
 import VStackMenu from './VStackMenu';
-import VStackThemeItem from './VStackThemeItem';
+import VStackThemeItem, {
+  VStackThemeItemProps,
+  VStackThemeItemEmits,
+  VStackThemeItemScopedSlots,
+} from './VStackThemeItem';
+
+export interface VStackTooltipProps<V = any>
+  extends VStackProps<V>,
+    VStackThemeItemProps {
+  opacity?: string | number;
+}
+
+export interface VStackTooltipEmits<V = any>
+  extends VStackEmits<V>,
+    VStackThemeItemEmits {}
+
+export interface VStackTooltipScopedSlots<V = any>
+  extends VStackScopedSlots<V>,
+    VStackThemeItemScopedSlots {
+  default?: VStackTooltip;
+}
 
 @Component({
   name: 'v-stack-tooltip',

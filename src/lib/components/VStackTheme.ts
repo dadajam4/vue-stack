@@ -2,6 +2,14 @@ import Vue from 'vue';
 import { Component, Prop } from 'vue-property-decorator';
 import { VueStackThemeName } from '../settings';
 
+export interface VStackThemeProps {
+  theme?: VueStackThemeName;
+}
+
+export interface VStackThemeEmits {}
+
+export interface VStackThemeScopedSlots {}
+
 @Component({
   name: 'v-stack-theme',
   provide() {
@@ -15,7 +23,7 @@ import { VueStackThemeName } from '../settings';
     },
   },
 })
-export default class VStackTheme extends Vue {
+export default class VStackTheme extends Vue implements VStackThemeProps {
   parentTheme!: VStackTheme | null;
 
   @Prop({ type: String }) theme?: VueStackThemeName;

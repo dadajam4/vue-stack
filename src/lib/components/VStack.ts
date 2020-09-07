@@ -47,6 +47,44 @@ export interface VStackCloseOption {
 
 type DelayTimerProps = 'openDelay' | 'closeDelay';
 
+export interface VStackProps<V = any> {
+  active?: boolean;
+  transition?: string | FunctionalComponentOptions;
+  alwaysRender?: boolean;
+  backdrop?: boolean | string;
+  openOnHover?: boolean;
+  openOnContextmenu?: boolean;
+  openDelay?: string | number;
+  closeDelay?: string | number;
+  closeOnClick?: boolean;
+  closeOnEsc?: boolean;
+  closeOnNavigation?: boolean;
+  persistent?: boolean;
+  timeout?: string | number;
+  noClickAnimation?: boolean;
+  navigationGuard?: boolean | NavigationGuard;
+  zIndex?: string | number;
+  contentClass?: any;
+  contentStyle?: string | object[] | object;
+  value?: V;
+  focusTrap?: boolean;
+}
+
+export interface VStackEmits<V = any> {
+  onPayload: V;
+  onChange: boolean;
+  onShow: VStack<V>;
+  onClose: VStack<V>;
+  onBeforeEnter: VStack<V>;
+  onAfterEnter: VStack<V>;
+  onBeforeLeave: VStack<V>;
+  onAfterLeave: VStack<V>;
+}
+
+export interface VStackScopedSlots<V = any> {
+  activator?: VStack<V>;
+}
+
 @Component({
   name: 'v-stack',
   inheritAttrs: false,
@@ -54,7 +92,7 @@ type DelayTimerProps = 'openDelay' | 'closeDelay';
     clickOutside,
   },
 })
-export default class VStack<V = any> extends Vue {
+export default class VStack<V = any> extends Vue implements VStackProps {
   $refs!: {
     backdrop: HTMLElement;
     content: HTMLElement;

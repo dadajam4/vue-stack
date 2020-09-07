@@ -2,6 +2,16 @@ import Vue from 'vue';
 import { Component, Prop } from 'vue-property-decorator';
 import VStackTheme from './VStackTheme';
 
+export interface VStackThemeItemProps {
+  color?: string;
+  flat?: boolean;
+  outline?: boolean;
+}
+
+export interface VStackThemeItemEmits {}
+
+export interface VStackThemeItemScopedSlots {}
+
 @Component({
   name: 'v-stack-theme-item',
   inject: {

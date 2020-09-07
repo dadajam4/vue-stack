@@ -1,8 +1,31 @@
 import { CreateElement, VNode } from 'vue';
 import { Component, Mixins, Prop } from 'vue-property-decorator';
-import VStack, { RenderContentResult } from './VStack';
-import VStackTheme from './VStackTheme';
+import VStack, {
+  RenderContentResult,
+  VStackProps,
+  VStackEmits,
+  VStackScopedSlots,
+} from './VStack';
+import VStackTheme, {
+  VStackThemeProps,
+  VStackThemeEmits,
+  VStackThemeScopedSlots,
+} from './VStackTheme';
 import bodyScrollLock from '../directives/body-scroll-lock';
+
+export interface VStackPanelProps<V = any>
+  extends VStackProps<V>,
+    VStackThemeProps {}
+
+export interface VStackPanelEmits<V = any>
+  extends VStackEmits<V>,
+    VStackThemeEmits {}
+
+export interface VStackPanelScopedSlots<V = any>
+  extends VStackScopedSlots<V>,
+    VStackThemeScopedSlots {
+  controls?: VStackPanel;
+}
 
 @Component({
   name: 'v-stack-panel',

@@ -1,11 +1,42 @@
 import { CreateElement, VNode, VNodeChildren } from 'vue';
 import { Component, Mixins, Prop } from 'vue-property-decorator';
-import VStack, { RenderContentResult } from './VStack';
-import VStackThemeItem from './VStackThemeItem';
+import VStack, {
+  RenderContentResult,
+  VStackProps,
+  VStackEmits,
+  VStackScopedSlots,
+} from './VStack';
+import VStackThemeItem, {
+  VStackThemeItemProps,
+  VStackThemeItemEmits,
+  VStackThemeItemScopedSlots,
+} from './VStackThemeItem';
 import VStackBtn from './VStackBtn';
 import VStackSnackbarTransition, {
   SnackPosition,
 } from './VStackSnackbarTransition';
+
+export interface VStackSnackbarProps<V = any>
+  extends VStackProps<V>,
+    VStackThemeItemProps {
+  top?: boolean;
+  bottom?: boolean;
+  left?: boolean;
+  right?: boolean;
+  closeBtn?: VNodeChildren | boolean;
+  timeout?: string | number;
+}
+
+export interface VStackSnackbarEmits<V = any>
+  extends VStackEmits<V>,
+    VStackThemeItemEmits {}
+
+export interface VStackSnackbarScopedSlots<V = any>
+  extends VStackScopedSlots<V>,
+    VStackThemeItemScopedSlots {
+  default?: VStackSnackbar;
+  close?: VStackSnackbar;
+}
 
 @Component({
   name: 'v-stack-snackbar',

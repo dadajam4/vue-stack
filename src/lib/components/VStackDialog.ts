@@ -1,9 +1,18 @@
 import { CreateElement, VNodeChildren, VNode } from 'vue';
 import { NormalizedScopedSlot, ScopedSlotChildren } from 'vue/types/vnode';
 import { Component, Mixins, Prop } from 'vue-property-decorator';
-import VStack, { RenderContentResult } from './VStack';
+import VStack, {
+  RenderContentResult,
+  VStackProps,
+  VStackEmits,
+  VStackScopedSlots,
+} from './VStack';
 import VStackBtn from './VStackBtn';
-import VStackTheme from './VStackTheme';
+import VStackTheme, {
+  VStackThemeProps,
+  VStackThemeEmits,
+  VStackThemeScopedSlots,
+} from './VStackTheme';
 import bodyScrollLock from '../directives/body-scroll-lock';
 
 export type VStackDialogActionSlot = (
@@ -36,6 +45,29 @@ const toStyleWidth = (width: number | string): string => {
   if (typeof width === 'number') return width + 'px';
   return isNaN(width as any) ? width : width + 'px';
 };
+
+export interface VStackDialogProps<V = any>
+  extends VStackProps<V>,
+    VStackThemeProps {
+  header?: VNodeChildren | ((vm: VStackDialog) => VNodeChildren);
+  actions?: VStackDialogAction[];
+  baseClassName?: string;
+  dialogType?: string;
+  width?: number | string;
+  minWidth?: number | string;
+  maxWidth?: number | string;
+}
+
+export interface VStackDialogEmits<V = any>
+  extends VStackEmits<V>,
+    VStackThemeEmits {}
+
+export interface VStackDialogScopedSlots<V = any>
+  extends VStackScopedSlots<V>,
+    VStackThemeScopedSlots {
+  header?: VStackDialog;
+  action?: VStackDialogActionSlotPayload;
+}
 
 @Component({
   name: 'v-stack-dialog',
@@ -141,7 +173,9 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
                 color: action.color,
                 outline: action.outline,
               },
-              staticClass: `${baseClassName}__action ${baseClassName}__action--${action.type}`,
+              staticClass: `${baseClassName}__action ${baseClassName}__action--${
+                action.type
+              }`,
               class: {
                 [`${baseClassName}__action--spacer`]: action.spacer,
               },
