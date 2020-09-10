@@ -281,7 +281,7 @@ export default class VStack<V = any> extends Vue implements VStackProps {
 
   private checkFocusTrap() {
     if (this.$isServer) return;
-    if (this.isActive) {
+    if (this.isActive && this.focusTrap) {
       this.setupFocusTrapper();
     } else {
       this.removeFocusTrapper();
@@ -305,10 +305,7 @@ export default class VStack<V = any> extends Vue implements VStackProps {
       }
     }
 
-    console.log('?????');
     return false;
-    // console.warn(ev);
-    // ev.preventDefault();
   }
 
   private setupFocusTrapper() {
