@@ -2,11 +2,12 @@ import { CreateElement } from 'vue';
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 import {
   RenderContentResult,
-  VStackProps,
-  VStackEmits,
-  VStackScopedSlots,
 } from './VStack';
-import VStackMenu from './VStackMenu';
+import VStackMenu, {
+  VStackMenuProps,
+  VStackMenuEmits,
+  VStackMenuScopedSlots,
+} from './VStackMenu';
 import VStackThemeItem, {
   VStackThemeItemProps,
   VStackThemeItemEmits,
@@ -14,17 +15,17 @@ import VStackThemeItem, {
 } from './VStackThemeItem';
 
 export interface VStackTooltipProps<V = any>
-  extends VStackProps<V>,
+  extends VStackMenuProps<V>,
     VStackThemeItemProps {
   opacity?: string | number;
 }
 
 export interface VStackTooltipEmits<V = any>
-  extends VStackEmits<V>,
+  extends VStackMenuEmits<V>,
     VStackThemeItemEmits {}
 
 export interface VStackTooltipScopedSlots<V = any>
-  extends VStackScopedSlots<V>,
+  extends VStackMenuScopedSlots<V>,
     VStackThemeItemScopedSlots {
   default?: VStackTooltip;
 }
