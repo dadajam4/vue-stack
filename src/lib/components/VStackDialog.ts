@@ -46,6 +46,28 @@ const toStyleWidth = (width: number | string): string => {
   return isNaN(width as any) ? width : width + 'px';
 };
 
+export type VStackDialogPromptType = 'text' | 'search' | 'tel' | 'email' | 'url' | 'password' | 'datetime' | 'date' | 'month' | 'week' | 'time' | 'datetime-local' | 'number' | 'color';
+
+export interface VStackDialogPromptSettings {
+  type?: VStackDialogPromptType;
+  value?: string | number | null;
+}
+
+export type RawVStackDialogPromptSettings = VStackDialogPromptType | VStackDialogPromptSettings;
+
+export function resoveRawVStackDialogPromptSettings(settings: RawVStackDialogPromptSettings): VStackDialogPromptSettings {
+  if (typeof settings === 'string') {
+    settings = {
+      type: settings,
+    }
+  }
+
+  return {
+    ...settings,
+    type: settings.type || 'text',
+  }
+}
+
 export interface VStackDialogProps<V = any>
   extends VStackProps<V>,
     VStackThemeProps {
@@ -56,6 +78,7 @@ export interface VStackDialogProps<V = any>
   width?: number | string;
   minWidth?: number | string;
   maxWidth?: number | string;
+  prompt?: RawVStackDialogPromptSettings;
 }
 
 export interface VStackDialogEmits<V = any>
@@ -79,6 +102,10 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
   VStack,
   VStackTheme,
 ) {
+  $refs!: {
+    promptInput: HTMLInputElement;
+  } & VStack['$refs'];
+
   @Prop({ type: String, default: 'v-stack-slide-y' }) transition!: string;
   @Prop() header?: VNodeChildren | ((vm: VStackDialog) => VNodeChildren);
   @Prop({ type: Array }) actions?: VStackDialogAction[];
@@ -89,6 +116,14 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
   @Prop({ type: [Number, String] }) maxWidth?: number | string;
   // @Prop({ type: Boolean, default: true }) stopDocumentScroll!: boolean;
   @Prop({ type: Boolean, default: true }) focusTrap!: boolean;
+  @Prop([String, Object]) prompt?: RawVStackDialogPromptSettings;
+
+  get computedPrompt() {
+    const { prompt } = this;
+    if (prompt) {
+      return resoveRawVStackDialogPromptSettings(prompt);
+    }
+  }
 
   get contentStyles() {
     const styles: { [key: string]: string } = {
@@ -130,12 +165,57 @@ export default class VStackDialog extends Mixins<VStack, VStackTheme>(
   private genStackDialogBody(): VNode {
     const defaultSlot = this.$scopedSlots.default;
     const additionalBody = this.createAdditionalBody(this.$createElement);
+    let children = additionalBody || (defaultSlot && defaultSlot(this));
+    const h = this.$createElement;
+
+    const { computedPrompt: prompt } = this;
+    if (prompt) {
+      // console.log(this.getThemeContextColor('field'))
+      const filedColor = this.getThemeContextColor('field');
+      const primaryColor = this.getThemeContextColor('primary');
+
+      const _children = children;
+      children = [
+        h('form', {
+          staticClass: 'v-stack-prompt-form',
+          on: {
+            submit: (e: Event) => {
+              e.preventDefault();
+              const { promptInput } = this.$refs;
+              const value = promptInput && promptInput.value;
+              this.resolve(value);
+            },
+          },
+        }, [h('input', {
+          staticClass: 'v-stack-prompt-input',
+          style: {
+            background: filedColor.base,
+            color: filedColor.text,
+            borderColor: primaryColor.base,
+          },
+          attrs: {
+            type: prompt.type,
+            autofocus: true,
+          },
+          domProps: {
+            value: prompt.value == null ? '' : String(prompt.value),
+          },
+          ref: 'promptInput',
+        })]),
+      ];
+      if (_children) {
+        children.unshift(h('div', {
+          staticClass: 'v-stack-prompt-content',
+        }, _children));
+      }
+    }
+
     return this.$createElement(
       'div',
       {
         staticClass: `${this.baseClassName}__body`,
       },
-      additionalBody || (defaultSlot && defaultSlot(this)),
+      children,
     );
   }
 

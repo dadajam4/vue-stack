@@ -1,0 +1,24 @@
+.v-stack-prompt-form {
+  display: block;
+  margin: 0;
+  width: 100%;
+}
+
+.v-stack-prompt-input {
+  appearance: none;
+  width: 100%;
+  margin: 0;
+  height: 36px;
+  line-height: 32px;
+  border: solid 2px #fff;
+  border-radius: 4px;
+  font-size: 16px;
+  padding: 0 10px;
+  outline: none;
+}
+
+.v-stack-prompt-content {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 12px;
+}

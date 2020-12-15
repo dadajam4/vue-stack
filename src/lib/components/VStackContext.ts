@@ -9,6 +9,7 @@ import {
   VStackDialog,
   VStackDialogAction,
   VStackSnackbar,
+  RawVStackDialogPromptSettings,
 } from './';
 import {
   VueStackSettings,
@@ -32,6 +33,11 @@ export interface VStackDynamicDialogOptions {
   actions?: VStackDialogAction[];
   content?: VNodeChildren;
   theme?: VueStackThemeName;
+  prompt?: RawVStackDialogPromptSettings;
+}
+
+export interface VStackDynamicConfirmOptions extends VStackDynamicDialogOptions {
+  autofocus?: false | 'ok' | 'cancel',
 }
 
 export type VStackDialogBaseSetting = Omit<
@@ -57,6 +63,7 @@ declare module 'vue/types/vue' {
     $dialog: VStackContext['dialog'];
     $alert: VStackContext['alert'];
     $confirm: VStackContext['confirm'];
+    $prompt: VStackContext['prompt'];
   }
 }
 
@@ -238,6 +245,7 @@ export default class VStackContext extends Vue {
       maxWidth,
       theme,
       header,
+      prompt,
     } = {
       ...this.$vstackSettings.dialog,
       ...opts,
@@ -260,6 +268,7 @@ export default class VStackContext extends Vue {
           minWidth,
           maxWidth,
           theme,
+          prompt,
         },
       },
       children: opts.content,
@@ -290,13 +299,14 @@ export default class VStackContext extends Vue {
     return this.dialog<void>(opts);
   }
 
-  confirm(opts: VStackDynamicDialogOptions | string): Promise<boolean> {
+  confirm<T = boolean>(opts: VStackDynamicConfirmOptions | string): Promise<T> {
     const content: VNodeChildren =
       typeof opts === 'string' ? opts : opts.content;
     opts = {
       ...(typeof opts === 'string' ? undefined : opts),
       content,
     };
+    const { autofocus = 'ok', prompt } = opts;
     if (opts.dialogType == null) {
       opts.dialogType = 'confirm';
     }
@@ -306,6 +316,7 @@ export default class VStackContext extends Vue {
         ...this.$vstackSettings.dialogActions.cancel,
         text: this.getString('cancel'),
         spacer: true,
+        autofocus: autofocus === 'cancel',
         click: dialog => {
           dialog.resolve(false);
         },
@@ -313,13 +324,36 @@ export default class VStackContext extends Vue {
       {
         type: 'ok',
         text: this.getString('ok'),
-        autofocus: true,
+        autofocus: autofocus === 'ok',
         click: dialog => {
-          dialog.resolve(true);
+          if (prompt) {
+            const { promptInput } = dialog.$refs;
+            const value = promptInput && promptInput.value;
+            dialog.resolve(value);
+          } else {
+            dialog.resolve(true);
+          }
         },
       },
     ];
-    return this.dialog<boolean>(opts);
+    return this.dialog<T>(opts);
+  }
+
+  prompt(opts: VStackDynamicConfirmOptions | string): Promise<string | false | undefined> {
+    opts = {
+      ...(typeof opts === 'string' ? { content: opts } : opts),
+    };
+
+    const { prompt } = opts;
+
+    return this.confirm({
+      ...opts,
+      prompt: prompt || 'text',
+      autofocus: false,
+      content: opts.content || [this.$createElement('div', {
+        staticClass: 'v-stack-prompt-activator',
+      })],
+    });
   }
 
   get themeSettings() {
@@ -435,6 +469,7 @@ export default class VStackContext extends Vue {
     Vue.prototype.$dialog = this.dialog;
     Vue.prototype.$alert = this.alert;
     Vue.prototype.$confirm = this.confirm;
+    Vue.prototype.$prompt = this.prompt;
 
     if (typeof window !== 'undefined') {
       this.updateContainerRect();

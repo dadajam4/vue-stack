@@ -132,6 +132,10 @@ export const vueStackThemeSettingsDefaults = (
             base: '#ffc107',
             text: '#fff',
           },
+          field: {
+            base: '#fff',
+            text: 'rgba(0, 0, 0, 0.87)',
+          },
           muted: {
             base: 'rgba(0, 0, 0, 0.26)',
             text: 'rgba(0, 0, 0, 0.12)',
@@ -178,6 +182,10 @@ export const vueStackThemeSettingsDefaults = (
           },
           warning: {
             base: '#ffc107',
+            text: '#fff',
+          },
+          field: {
+            base: '#202124',
             text: '#fff',
           },
           muted: {

@@ -37,6 +37,7 @@
       </div>
       <button type="button" @click="onClickAlert">alert</button>
       <button type="button" @click="onClickConfirm">confirm</button>
+      <button type="button" @click="onClickPrompt">prompt</button>
       <button type="button" @click="onClickSnack">snackbar</button>
     </div>
 
@@ -101,6 +102,16 @@ export default class HomeView extends Vue {
   async onClickConfirm() {
     const result = await this.$confirm(this.text || 'confirm');
     this.$alert(result ? 'YES!!!' : 'No...');
+  }
+
+  async onClickPrompt() {
+    const result = await this.$prompt({
+      content: this.text,
+      prompt: {
+        value: '555',
+      },
+    });
+    this.$alert(`${typeof result} : ${result}`);
   }
 
   onClickSnack() {
