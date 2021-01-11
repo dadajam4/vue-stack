@@ -1,4 +1,5 @@
 import Vue, { CreateElement, VNode, VNodeChildren } from 'vue';
+import { ScopedSlotChildren } from 'vue/types/vnode';
 import { Component } from 'vue-property-decorator';
 import { NavigationGuard } from 'vue-router';
 import {
@@ -31,7 +32,7 @@ export interface VStackDynamicDialogOptions {
   maxWidth?: number | string;
   header?: VNodeChildren | ((vm: VStackDialog) => VNodeChildren);
   actions?: VStackDialogAction[];
-  content?: VNodeChildren;
+  content?: VNodeChildren | ((vm: VStack) => ScopedSlotChildren);
   theme?: VueStackThemeName;
   prompt?: RawVStackDialogPromptSettings;
 }
@@ -276,7 +277,7 @@ export default class VStackContext extends Vue {
   }
 
   alert(opts: VStackDynamicDialogOptions | string): Promise<void> {
-    const content: VNodeChildren =
+    const content: VStackDynamicDialogOptions['content'] =
       typeof opts === 'string' ? opts : opts.content;
     opts = {
       ...(typeof opts === 'string' ? undefined : opts),
@@ -300,7 +301,7 @@ export default class VStackContext extends Vue {
   }
 
   confirm<T = boolean>(opts: VStackDynamicConfirmOptions | string): Promise<T> {
-    const content: VNodeChildren =
+    const content: VStackDynamicDialogOptions['content'] =
       typeof opts === 'string' ? opts : opts.content;
     opts = {
       ...(typeof opts === 'string' ? undefined : opts),

@@ -1,11 +1,12 @@
 import { VNode, CreateElement, VNodeData, VNodeChildren } from 'vue';
+import { ScopedSlotChildren } from 'vue/types/vnode';
 import { Vue, Component } from 'vue-property-decorator';
 import { VStackContext, VStack } from './';
 
 export interface VStackDynamicSetting {
   Ctor: typeof VStack;
   data?: VNodeData;
-  children?: VNodeChildren;
+  children?: VNodeChildren | ((stack: VStack) => ScopedSlotChildren);
   closeOnNavigation?: boolean;
   tag?: any;
 }
@@ -51,6 +52,8 @@ export default class VStackDynamicContainer extends Vue {
       const { Ctor, data: _data = {} } = setting;
       let { children } = setting;
 
+      this.$scopedSlots
+
       const data = {
         ..._data,
       };
@@ -80,15 +83,33 @@ export default class VStackDynamicContainer extends Vue {
         }
       });
 
-      if (typeof children === 'string' && children.indexOf('\n') !== -1) {
-        const tmp: VNodeChildren = [];
-        const lines = children.trim().split('\n');
-        lines.forEach((line, index) => {
-          if (index !== 0) tmp.push(h('br'));
-          tmp.push(line);
-        });
-        children = tmp;
+      let defaultSlot: ((stack: VStack) => ScopedSlotChildren) | undefined;
+
+      if (typeof children === 'function') {
+        defaultSlot = children;
+      } else {
+        if (typeof children === 'string' && children.indexOf('\n') !== -1) {
+          const tmp: VNodeChildren = [];
+          const lines = children.trim().split('\n');
+          lines.forEach((line, index) => {
+            if (index !== 0) tmp.push(h('br'));
+            tmp.push(line);
+          });
+          children = tmp;
+        }
       }
+
+      // if (typeof children === 'string' && children.indexOf('\n') !== -1) {
+      //   const tmp: VNodeChildren = [];
+      //   const lines = children.trim().split('\n');
+      //   lines.forEach((line, index) => {
+      //     if (index !== 0) tmp.push(h('br'));
+      //     tmp.push(line);
+      //   });
+      //   children = tmp;
+      // } else if (typeof children === 'function') {
+      //   children = children();
+      // }
 
       return h(
         Ctor,
@@ -97,8 +118,11 @@ export default class VStackDynamicContainer extends Vue {
           ref: 'stacks',
           refInFor: true,
           key: id,
+          scopedSlots: defaultSlot ? {
+            default: defaultSlot,
+          } : undefined,
         },
-        children,
+        defaultSlot ? undefined : (children as VNodeChildren),
       );
     });
 

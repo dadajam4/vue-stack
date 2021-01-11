@@ -151,7 +151,21 @@ export default class HomeView extends Vue {
 
   onClickDynamic2() {
     this.$alert({
-      content: [this.$createElement('div', {}, 'あいう')],
+      content: (dialog) => {
+        return [this.$createElement('div', {}, [
+          'あいう',
+          this.$createElement('button', {
+            attrs: {
+              type: 'button',
+            },
+            on: {
+              click: (e) => {
+                dialog.close();
+              },
+            },
+          }, 'CLICK!')
+        ])];
+      },
       actions: [
         {
           type: 'ok',
