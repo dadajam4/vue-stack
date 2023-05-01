@@ -51,7 +51,7 @@
     "rollup-plugin-css-only": "^1.0.0",
     "rollup-plugin-sass": "^1.2.2",
     "rollup-plugin-typescript2": "^0.21.1",
-    "rollup-plugin-vue": "^5.0.0",
+    "rollup-plugin-vue": "^6.0.0",
     "sass-loader": "^7.1.0",
     "ts-node": "^8.2.0",
     "vue-property-decorator": "^8.1.1"
