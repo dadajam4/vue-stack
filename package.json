@@ -43,7 +43,7 @@
   "devDependencies": {
     "@dadajam4/plugboy": "^0.2.0",
     "@nuxt/typescript": "^2.8.1",
-    "@vue/babel-preset-app": "^3.8.0",
+    "@vue/babel-preset-app": "^5.0.8",
     "node-sass": "^4.12.0",
     "nuxt": "^2.8.1",
     "nuxt-property-decorator": "^2.3.0",
@@ -51,7 +51,7 @@
     "rollup-plugin-css-only": "^1.0.0",
     "rollup-plugin-sass": "^1.2.2",
     "rollup-plugin-typescript2": "^0.21.1",
-    "rollup-plugin-vue": "^5.0.0",
+    "rollup-plugin-vue": "^6.0.0",
     "sass-loader": "^7.1.0",
     "ts-node": "^8.2.0",
     "vue-property-decorator": "^8.1.1"
